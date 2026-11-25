@@ -1,0 +1,2042 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Radioterapia — Rozszerzony (120 pytań)</title>
+  <style>
+    :root {
+      --bg: #f4f6f9;
+      --card: #ffffff;
+      --text: #18202c;
+      --muted: #5c687a;
+      --accent: #1d5fd6;
+      --accent-hover: #1549ab;
+      --accent-soft: #eef4ff;
+      --ok-bg: #eaf8f0;
+      --ok-border: #1e8e5a;
+      --ok-text: #135c39;
+      --bad-bg: #fdeeee;
+      --bad-border: #c93b3b;
+      --bad-text: #841e1e;
+      --border: #dde3ec;
+      --radius: 12px;
+      --shadow: 0 6px 24px rgba(24, 32, 44, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 16px 48px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+
+    .rt-quiz-wrap {
+      max-width: 820px;
+      margin: 0 auto;
+    }
+
+    .rt-header {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      box-shadow: var(--shadow);
+      margin-bottom: 16px;
+    }
+
+    .rt-title-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    h1.rt-title {
+      margin: 0;
+      font-size: 1.35rem;
+      line-height: 1.3;
+    }
+
+    .rt-badge {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .rt-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    select.rt-select {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-size: 0.92rem;
+      max-width: 100%;
+    }
+
+    button.rt-btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    button.rt-btn:hover:not(:disabled) {
+      background: #f0f3f8;
+    }
+
+    button.rt-btn.primary {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    button.rt-btn.primary:hover:not(:disabled) {
+      background: var(--accent-hover);
+    }
+
+    button.rt-btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .rt-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+    }
+
+    .rt-stats strong {
+      color: var(--text);
+    }
+
+    .rt-progress-track {
+      width: 100%;
+      height: 7px;
+      background: #e5eaf2;
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 10px;
+    }
+
+    .rt-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.25s ease;
+    }
+
+    .rt-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .rt-meta {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    .rt-question {
+      font-size: 1.12rem;
+      font-weight: 600;
+      margin: 0 0 18px;
+      color: var(--text);
+    }
+
+    .rt-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .rt-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      text-align: left;
+      padding: 13px 15px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-size: 0.96rem;
+      cursor: pointer;
+      transition: border-color 0.15s ease, background 0.15s ease;
+    }
+
+    .rt-option:hover:not(:disabled) {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .rt-option:disabled {
+      cursor: default;
+    }
+
+    .rt-opt-key {
+      flex: 0 0 auto;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.85rem;
+      background: #eef2f7;
+      color: var(--text);
+      margin-top: 1px;
+    }
+
+    .rt-option.correct {
+      background: var(--ok-bg);
+      border-color: var(--ok-border);
+      color: var(--ok-text);
+    }
+
+    .rt-option.correct .rt-opt-key {
+      background: var(--ok-border);
+      color: #fff;
+    }
+
+    .rt-option.wrong {
+      background: var(--bad-bg);
+      border-color: var(--bad-border);
+      color: var(--bad-text);
+    }
+
+    .rt-option.wrong .rt-opt-key {
+      background: var(--bad-border);
+      color: #fff;
+    }
+
+    .rt-option.dimmed {
+      opacity: 0.65;
+    }
+
+    .rt-feedback {
+      margin-top: 18px;
+      padding: 15px 17px;
+      border-radius: 10px;
+      border-left: 4px solid transparent;
+      display: none;
+    }
+
+    .rt-feedback.show {
+      display: block;
+    }
+
+    .rt-feedback.ok {
+      background: var(--ok-bg);
+      border-left-color: var(--ok-border);
+      color: var(--ok-text);
+    }
+
+    .rt-feedback.bad {
+      background: var(--bad-bg);
+      border-left-color: var(--bad-border);
+      color: var(--bad-text);
+    }
+
+    .rt-feedback-title {
+      font-weight: 700;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .rt-explanation {
+      margin: 0;
+      font-size: 0.94rem;
+      color: var(--text);
+    }
+
+    .rt-footer-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .rt-summary {
+      text-align: center;
+      padding: 12px 4px;
+    }
+
+    .rt-summary h2 {
+      margin: 0 0 8px;
+      font-size: 1.3rem;
+    }
+
+    .rt-summary-score {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--accent);
+      margin: 10px 0 16px;
+    }
+  </style>
+</head>
+<body>
+  <div class="rt-quiz-wrap" id="rtQuizApp">
+    <div class="rt-header">
+      <div class="rt-title-row">
+        <h1 class="rt-title">Radioterapia — Quiz wielokrotnego wyboru</h1>
+        <span class="rt-badge" id="rtTotalBadge">120 pytań</span>
+      </div>
+
+      <div class="rt-controls">
+        <select class="rt-select" id="rtSectionSelect" aria-label="Wybierz dział">
+          <option value="ALL">Wszystkie działy (120 pytań)</option>
+          <option value="Część I">Część I. Podstawy dozymetrii, PDG, build-up i planowanie</option>
+          <option value="Część II">Część II. Obliczenia, widmo, jakość wiązki, komora i aktywność</option>
+          <option value="Część III">Część III. Geometria wiązki zewnętrznej i parametry aparatu</option>
+          <option value="Część IV">Część IV. Nowotwory dna jamy ustnej</option>
+          <option value="Część V">Część V. Słownik pojęć i podział promieniowania</option>
+        </select>
+
+        <button class="rt-btn" id="rtShuffleQuestionsBtn" type="button">Tasuj pytania</button>
+        <button class="rt-btn primary" id="rtRestartBtn" type="button">Nowa runda (losuj odpowiedzi)</button>
+      </div>
+
+      <div class="rt-stats">
+        <span>Pytanie: <strong id="rtPosText">1 / 120</strong></span>
+        <span>Odpowiedziano: <strong id="rtAnsweredText">0</strong></span>
+        <span>Poprawne: <strong id="rtCorrectText">0</strong></span>
+        <span>Skuteczność: <strong id="rtAccuracyText">0%</strong></span>
+      </div>
+
+      <div class="rt-progress-track">
+        <div class="rt-progress-bar" id="rtProgressBar"></div>
+      </div>
+    </div>
+
+    <div class="rt-card" id="rtCard"></div>
+  </div>
+
+  <script>
+    (function () {
+      const QUESTIONS = [
+        {
+          id: 1,
+          section: "Część I",
+          q: "Jakie dwa pomiary zalicza się do pomiarów parametrów mechanicznych?",
+          correct: "Izocentrum oraz zgodność pola świetlnego i promieniowania.",
+          distractors: [
+            "PDG (procentową dawkę głęboką) oraz profile w osi centralnej wiązki.",
+            "Wydajność w funkcji pola (moc dawki) oraz kalibrację komory jonizacyjnej.",
+            "Współczynnik TPR20/10 oraz grubość warstwy połowiącej (HVL)."
+          ],
+          explanation: "Do pomiarów parametrów mechanicznych zalicza się izocentrum oraz zgodność pola świetlnego i promieniowania. PDG, profile i wydajność w funkcji pola to pomiary dozymetryczne."
+        },
+        {
+          id: 2,
+          section: "Część I",
+          q: "Jakie trzy pomiary dozymetryczne wykonuje się podczas kontroli aparatury?",
+          correct: "PDG (procentową dawkę głęboką), profile oraz wydajność w funkcji pola (moc dawki).",
+          distractors: [
+            "Izocentrum, zgodność pola świetlnego i promieniowania oraz kąt skręcenia kolimatora.",
+            "Wielkość GTV, margines CTV oraz położenie punktu izocentrycznego.",
+            "Aktywność źródła w bekerelach, stałą rozpadu oraz czas połowicznego rozpadu."
+          ],
+          explanation: "Podczas kontroli aparatury wykonuje się trzy pomiary dozymetryczne: PDG (procentową dawkę głęboką), profile oraz wydajność w funkcji pola (moc dawki)."
+        },
+        {
+          id: 3,
+          section: "Część I",
+          q: "Czym jest dawka pochłonięta?",
+          correct: "To ilość energii zaabsorbowana w jednostce masy (D = E/m).",
+          distractors: [
+            "To stosunek dawki na głębokości 20 cm do dawki na głębokości 10 cm w wodzie.",
+            "To grubość materiału pochłaniającego zmniejszająca natężenie wiązki o połowę.",
+            "To liczba rozpadów promieniotwórczych zachodzących w źródle w ciągu jednej sekundy."
+          ],
+          explanation: "Dawka pochłonięta (D) definiowana jest jako ilość (średnia energia E) zaabsorbowana w jednostce masy (m), czyli D = E/m."
+        },
+        {
+          id: 4,
+          section: "Część I",
+          q: "Jaka jest podstawowa jednostka dawki pochłoniętej i jak się ją definiuje?",
+          correct: "Jednostką jest 1 Gray, gdzie 1 Gy = 1 J / 1 kg.",
+          distractors: [
+            "Jednostką jest 1 bekerel, gdzie 1 Bq = 1 J / 1 kg.",
+            "Jednostką jest 1 Gray, gdzie 1 Gy = 100 J / 1 kg.",
+            "Jednostką jest 1 centygrej, gdzie 1 cGy = 100 J / 1 kg."
+          ],
+          explanation: "Podstawową jednostką dawki pochłoniętej w układzie SI jest Gray (Gy), odpowiadający jednemu dżulowi pochłoniętemu w jednym kilogramie masy: 1 Gy = 1 J/1 kg."
+        },
+        {
+          id: 5,
+          section: "Część I",
+          q: "W jakiej mniejszej jednostce często wyraża się dawkę pochłoniętą?",
+          correct: "Często wyraża się ją w centygrejach (cGy).",
+          distractors: [
+            "Często wyraża się ją w megabekerelach (MBq).",
+            "Często wyraża się ją w woltach na metr (V/m).",
+            "Często wyraża się ją w milimetrach ołowiu (mm Pb)."
+          ],
+          explanation: "W praktyce klinicznej i dozymetrii dawkę pochłoniętą często wyraża się w centygrejach (cGy)."
+        },
+        {
+          id: 6,
+          section: "Część I",
+          q: "Jaki jest stosunek centygreja do greja?",
+          correct: "Centygrej jest 100 razy mniejszy od greja (1 Gy = 100 cGy).",
+          distractors: [
+            "Centygrej jest 100 razy większy od greja (100 Gy = 1 cGy).",
+            "Centygrej jest 1000 razy mniejszy od greja (1 Gy = 1000 cGy).",
+            "Centygrej jest 10 razy mniejszy od greja (1 Gy = 10 cGy)."
+          ],
+          explanation: "Przedrostek centy- oznacza jedną setną, dlatego 1 Gy = 100 cGy (1 cGy = 0,01 Gy)."
+        },
+        {
+          id: 7,
+          section: "Część I",
+          q: "Czym jest procentowa dawka głęboka (PDG)?",
+          correct: "To dawka w funkcji głębokości w osi centralnej wiązki.",
+          distractors: [
+            "To dawka mierzona w poprzek wiązki na stałej głębokości poza osią centralną.",
+            "To udział energii promieniowania rozproszonego względem energii całkowitej wiązki.",
+            "To procent aktywności izotopu pozostający po upływie jednego okresu półtrwania."
+          ],
+          explanation: "Procentowa dawka głęboka (PDG / PDD) opisuje zmianę dawki w funkcji głębokości wzdłuż osi centralnej wiązki względem dawki maksymalnej."
+        },
+        {
+          id: 8,
+          section: "Część I",
+          q: "Jaki jest wzór na procentową dawkę głęboką (PDG) i co oznaczają jego symbole?",
+          correct: "PDG = (Dd / Ddmax) · 100%, gdzie Dd to dawka na głębokości d, a Ddmax to dawka maksymalna (dawka w maksimum).",
+          distractors: [
+            "PDG = (Ddmax / Dd) · 100%, gdzie Dd to dawka w maksimum, a Ddmax to dawka na powierzchni.",
+            "PDG = (D20 / D10) · 100%, gdzie D20 to dawka na głębokości 10 cm, a D10 na 20 cm.",
+            "PDG = (E / m) · 100%, gdzie E to energia maksymalna, a m to masa fantomu."
+          ],
+          explanation: "Wzór ma postać PDG = (Dd / Ddmax) · 100%, gdzie Dd oznacza dawkę na głębokości d, a Ddmax oznacza dawkę maksymalną."
+        },
+        {
+          id: 9,
+          section: "Część I",
+          q: "Co dzieje się z punktem maksimum dawki wraz ze wzrostem energii promieniowania fotonowego?",
+          correct: "Punkt, w którym dawka jest maksymalna, odsuwa się od powierzchni.",
+          distractors: [
+            "Punkt, w którym dawka jest maksymalna, przysuwa się do powierzchni.",
+            "Punkt maksimum dawki zawsze pozostaje dokładnie na powierzchni skóry (głębokość 0 mm).",
+            "Punkt maksimum dawki przesuwa się w bok poza oś centralną wiązki."
+          ],
+          explanation: "Wraz ze wzrostem energii wiązki fotonowej elektrony wtórne mają większy zasięg, więc maksimum dawki przesuwa się głębiej — odsuwa się od powierzchni."
+        },
+        {
+          id: 10,
+          section: "Część I",
+          q: "Jak zmienia się położenie punktu maksimum dawki wraz ze wzrostem wielkości pola dla wiązek fotonowych?",
+          correct: "Punkt, w którym dawka jest maksymalna, przysuwa się do powierzchni.",
+          distractors: [
+            "Punkt, w którym dawka jest maksymalna, odsuwa się w głąb fantomu.",
+            "Wielkość pola nie ma żadnego wpływu na położenie punktu maksimum dawki.",
+            "Punkt maksimum dawki cofa się aż za źródło promieniowania."
+          ],
+          explanation: "Gdy wielkość pola rośnie, zwiększa się udział promieniowania rozproszonego, co powoduje, że punkt maksimum dawki przysuwa się do powierzchni."
+        },
+        {
+          id: 11,
+          section: "Część I",
+          q: "Jak wielkość pola wpływa na dawkę na powierzchni?",
+          correct: "Dawka na powierzchni rośnie wraz ze wzrostem wielkości pola.",
+          distractors: [
+            "Dawka na powierzchni maleje wraz ze wzrostem wielkości pola.",
+            "Dawka na powierzchni zawsze wynosi dokładnie 100% dawki maksymalnej niezależnie od pola.",
+            "Dawka na powierzchni spada do zera przy dużych polach terapeutycznych."
+          ],
+          explanation: "Wraz ze zwiększaniem wielkości pola rośnie ilość promieniowania rozproszonego docierającego do powierzchni, dlatego dawka na powierzchni rośnie."
+        },
+        {
+          id: 12,
+          section: "Część I",
+          q: "Czy istnieje prosta zależność między dawką na powierzchni a energią promieniowania?",
+          correct: "Nie, nie istnieje prosta zależność pomiędzy dawką na powierzchni i energią promieniowania.",
+          distractors: [
+            "Tak, dawka na powierzchni zawsze rośnie liniowo wprost proporcjonalnie do energii.",
+            "Tak, dawka na powierzchni zawsze maleje odwrotnie proporcjonalnie do energii.",
+            "Tak, dla każdej energii wiązki dawka na powierzchni stanowi stałe 50% Dmax."
+          ],
+          explanation: "Pomiędzy dawką na powierzchni a energią promieniowania nie istnieje prosta zależność."
+        },
+        {
+          id: 13,
+          section: "Część I",
+          q: "Jak zmienia się tempo wzrostu PDG w obszarze narastania dawki (build-up) w miarę zbliżania się do maksimum?",
+          correct: "Najszybszy wzrost PDG obserwuje się blisko powierzchni, a w miarę zbliżania się do maksimum wzrost staje się coraz wolniejszy.",
+          distractors: [
+            "Najwolniejszy wzrost PDG obserwuje się przy powierzchni, a tuż przed maksimum rośnie on gwałtownie.",
+            "Tempo wzrostu PDG w całym obszarze build-up jest ściśle stałe na każdej głębokości.",
+            "W obszarze build-up PDG rośnie na przemian z szybkim spadkiem co kilka milimetrów."
+          ],
+          explanation: "W obszarze build-up przyrost PDG jest najszybszy w pobliżu powierzchni i stopniowo zwalnia w miarę zbliżania się do maksimum dawki."
+        },
+        {
+          id: 14,
+          section: "Część I",
+          q: "Jakie trzy metody leczenia skojarzonego wymienia się przy kwalifikacji pacjenta przez lekarza?",
+          correct: "Chirurgię, chemioterapię oraz radioterapię.",
+          distractors: [
+            "Chirurgię, fizjoterapię oraz diagnostykę izotopową.",
+            "Chemioterapię, akupunkturę oraz balneoterapię.",
+            "Radioterapię, ultrasonografię oraz spirometrię."
+          ],
+          explanation: "Przy kwalifikacji pacjenta do leczenia skojarzonego wymienia się chirurgię, chemioterapię oraz radioterapię."
+        },
+        {
+          id: 15,
+          section: "Część I",
+          q: "Jakie dwa cele leczenia określa lekarz podczas planowania radioterapii?",
+          correct: "Cel radykalny oraz paliatywny.",
+          distractors: [
+            "Cel profilaktyczny oraz diagnostyczny.",
+            "Cel przedoperacyjny oraz pooperacyjny.",
+            "Cel objawowy oraz eksperymentalny."
+          ],
+          explanation: "Podczas planowania radioterapii lekarz określa jeden z dwóch głównych celów leczenia: radykalny albo paliatywny."
+        },
+        {
+          id: 16,
+          section: "Część I",
+          q: "Jakie obszary i struktury wrysowuje lekarz w systemie planowania leczenia?",
+          correct: "Obszary GTV, CTV, PTV oraz narządy krytyczne.",
+          distractors: [
+            "Tylko obszar GTV oraz pole świetlne na skórze pacjenta.",
+            "Wyłącznie narządy krytyczne oraz punkty centrowania na masce.",
+            "Obszar napromieniany (irradiated volume) oraz tory elektronów wtórnych."
+          ],
+          explanation: "Lekarz wrysowuje w systemie planowania leczenia objętości tarczowe GTV, CTV i PTV oraz narządy krytyczne."
+        },
+        {
+          id: 17,
+          section: "Część I",
+          q: "Jakie parametry dawkowania i frakcjonowania określa lekarz?",
+          correct: "Dawki całkowite, dawki frakcyjne, sposób frakcjonowania oraz dawki na narządy krytyczne.",
+          distractors: [
+            "Jedynie dawkę całkowitą oraz kąt skręcenia kolimatora.",
+            "Wyłącznie liczbę jednostek monitorowych oraz czas ekspozycji telemetru.",
+            "Tylko dawkę frakcyjną oraz współczynnik kalibracji elektromierza."
+          ],
+          explanation: "Lekarz określa dawki całkowite, dawki frakcyjne, sposób frakcjonowania oraz dopuszczalne/planowane dawki na narządy krytyczne."
+        },
+        {
+          id: 18,
+          section: "Część I",
+          q: "Jakie rozwinięcia (polskie i angielskie) ma skrót GTV według zaleceń ICRU Raport 50?",
+          correct: "GTV (gross tumor volume) — obszar guza.",
+          distractors: [
+            "GTV (general target volume) — kliniczny obszar napromieniania.",
+            "GTV (gross tissue volume) — zaplanowany obszar napromieniania.",
+            "GTV (growth tumor volume) — obszar leczony."
+          ],
+          explanation: "Według ICRU Raport 50 GTV to gross tumor volume, czyli obszar guza."
+        },
+        {
+          id: 19,
+          section: "Część I",
+          q: "Jakie rozwinięcia (polskie i angielskie) ma skrót CTV według zaleceń ICRU Raport 50?",
+          correct: "CTV (clinical target volume) — kliniczny obszar napromieniania.",
+          distractors: [
+            "CTV (computed target volume) — zaplanowany obszar napromieniania.",
+            "CTV (clinical tumor volume) — obszar guza.",
+            "CTV (central therapy volume) — obszar napromieniany."
+          ],
+          explanation: "Według ICRU Raport 50 CTV to clinical target volume, czyli kliniczny obszar napromieniania."
+        },
+        {
+          id: 20,
+          section: "Część I",
+          q: "Jakie rozwinięcia (polskie i angielskie) ma skrót PTV według zaleceń ICRU Raport 50?",
+          correct: "PTV (planning target volume) — zaplanowany obszar napromieniania.",
+          distractors: [
+            "PTV (patient target volume) — obszar guza.",
+            "PTV (primary treatment volume) — kliniczny obszar napromieniania.",
+            "PTV (photon therapy volume) — obszar leczony."
+          ],
+          explanation: "Według ICRU Raport 50 PTV to planning target volume, czyli zaplanowany obszar napromieniania."
+        },
+        {
+          id: 21,
+          section: "Część I",
+          q: "Jakie dwa szersze obszary znajdują się na schemacie ICRU Raport 50 poza PTV?",
+          correct: "Obszar leczony (treated volume) oraz obszar napromieniany (irradiated volume).",
+          distractors: [
+            "Obszar guza (GTV) oraz kliniczny obszar napromieniania (CTV).",
+            "Obszar nasycenia oraz obszar wyładowania lawinowego.",
+            "Obszar narządu krytycznego oraz obszar rozproszenia wstecznego."
+          ],
+          explanation: "Poza PTV na schemacie ICRU Raport 50 wyróżnia się obszar leczony (treated volume) oraz szerszy obszar napromieniany (irradiated volume)."
+        },
+        {
+          id: 22,
+          section: "Część I",
+          q: "Jakie elementy przygotowują technicy w zakresie unieruchomienia i modyfikacji wiązki?",
+          correct: "Przygotowują maski, osłony indywidualne oraz bolusy.",
+          distractors: [
+            "Przygotowują kryształy NaI(Tl), fotokatody oraz dynody.",
+            "Przygotowują złącza p-i-n, elektromierze oraz fantomy wodne.",
+            "Przygotowują roztwory izotopowe oraz fiolki do iniekcji."
+          ],
+          explanation: "W zakresie unieruchomienia i modyfikacji wiązki technicy przygotowują maski, osłony indywidualne oraz bolusy."
+        },
+        {
+          id: 23,
+          section: "Część I",
+          q: "Jakie czynności związane z obsługą sprzętu i napromienianiem wykonują technicy?",
+          correct: "Obsługują aparaty, symulator i tomograf oraz prowadzą napromienianie.",
+          distractors: [
+            "Wyłącznie wyznaczają izodozy w przestrzeni CT i obliczają stałą rozpadu.",
+            "Tylko dopuszczają aparat do pracy po przeglądzie mechanicznym.",
+            "Jedynie testują dawkomierze TLD i mosfety dla całego ciała."
+          ],
+          explanation: "Technicy obsługują aparaty terapeutyczne, symulator i tomograf oraz prowadzą napromienianie pacjenta."
+        },
+        {
+          id: 24,
+          section: "Część I",
+          q: "Jakie czynności weryfikacyjne i oznaczające wykonują technicy?",
+          correct: "Wykonują zdjęcia sprawdzające oraz zaznaczają na maskach (lub skórze pacjenta) linie laserowe, punkty centrowania i granice wiązek.",
+          distractors: [
+            "Wykonują wyłącznie biopsję guza oraz badanie endoskopowe.",
+            "Zaznaczają jedynie położenie dynod na wykresie charakterystyki detektora.",
+            "Wykonują tylko pomiary TPR20/10 w fantomie wodnym."
+          ],
+          explanation: "Technicy wykonują zdjęcia sprawdzające i nanoszą na maski lub skórę pacjenta linie laserowe, punkty centrowania oraz granice wiązek."
+        },
+        {
+          id: 25,
+          section: "Część I",
+          q: "Jakie zadania fizyków należą do części „Dozymetria”?",
+          correct: "Dopuszczenie aparatu do pracy, kontrola aparatów, pomiary danych do systemu planowania leczenia (i jego testowanie), testowanie dawkomierzy (TLD, mosfety) oraz przygotowanie danych pomiarowych do napromieniania całego ciała.",
+          distractors: [
+            "Wyłącznie wycinanie guza z marginesem zdrowej tkanki i podawanie leków celowanych.",
+            "Tylko nanoszenie linii laserowych na skórę pacjenta i wykonywanie biopsji.",
+            "Jedynie określanie celów leczenia (radykalnego lub paliatywnego) i dawki frakcyjnej."
+          ],
+          explanation: "W dozymetrii fizycy zajmują się dopuszczeniem aparatu do pracy, jego kontrolą, pomiarami i testowaniem TPS, testowaniem dawkomierzy (TLD, mosfety) oraz danymi do napromieniania całego ciała."
+        },
+        {
+          id: 26,
+          section: "Część I",
+          q: "W jakiej postaci wyznacza się rozkład dawek w ramach planowania fizyków?",
+          correct: "Wyznacza się go w postaci izodoz (w płaszczyźnie/obrysie, w przestrzeni/CT oraz w punktach).",
+          distractors: [
+            "Wyznacza się go wyłącznie w postaci wykresu zależności aktywności od czasu.",
+            "Wyznacza się go jedynie w postaci wartości HVL w milimetrach ołowiu.",
+            "Wyznacza się go wyłącznie jako pojedynczą liczbę w bekerelach."
+          ],
+          explanation: "Rozkład dawek wyznacza się w postaci izodoz — w płaszczyźnie/obrysie, w przestrzeni/CT oraz w punktach."
+        },
+        {
+          id: 27,
+          section: "Część I",
+          q: "Jakie elementy wyboru techniki napromieniania wchodzą w zakres planowania fizyków?",
+          correct: "Należą do nich m.in. wybór optymalnej techniki napromieniania: izocentrum, SSD, rodzaj i energia promieniowania, ilość, kierunki i wagi wiązek, bolusy, kliny oraz osłony.",
+          distractors: [
+            "Wybór między biopsją, endoskopią, rezonansem magnetycznym i badaniem krwi.",
+            "Wybór między kationami, anionami, fotokatodą i złączem p-n.",
+            "Wybór między dietą śródziemnomorską, rzuceniem palenia i kremem z filtrem."
+          ],
+          explanation: "Planowanie fizyków obejmuje dobór techniki napromieniania: m.in. izocentrum, SSD, rodzaju i energii wiązki, liczby, kierunków i wag wiązek oraz modyfikatorów (bolusy, kliny, osłony)."
+        },
+        {
+          id: 28,
+          section: "Część I",
+          q: "Jakie pozostałe czynności wchodzą w zakres części „Planowanie” fizyków?",
+          correct: "Optymalizacja, określenie czasu napromieniania lub dawek monitorowych, resymulacja oraz planowanie napromieniania w kilku etapach.",
+          distractors: [
+            "Pobieranie próbek tkanki na biopsję oraz ocena histopatologiczna preparatu.",
+            "Zakładanie protez dentystycznych oraz leczenie przewlekłego zapalenia języka.",
+            "Pomiar napięcia polaryzującego fotopowielacza bez udziału systemu planowania."
+          ],
+          explanation: "Do części „Planowanie” fizyków należą też optymalizacja, wyznaczenie czasu lub dawek monitorowych, resymulacja oraz planowanie wieloetapowe."
+        },
+        {
+          id: 29,
+          section: "Część II",
+          q: "Jaka jest definicja dawki pochłoniętej (D)?",
+          correct: "Dawka pochłonięta (D) to średnia energia (E) zaabsorbowana przez materię w jednostce masy (m).",
+          distractors: [
+            "Dawka pochłonięta (D) to maksymalna energia elektronów padających na tarczę akceleratora.",
+            "Dawka pochłonięta (D) to stosunek ładunku zebranego na anodzie do czasu pomiaru.",
+            "Dawka pochłonięta (D) to czas, po którym aktywność źródła spada o połowę."
+          ],
+          explanation: "Dawka pochłonięta D jest zdefiniowana jako średnia energia E zaabsorbowana przez materię w jednostce masy m."
+        },
+        {
+          id: 30,
+          section: "Część II",
+          q: "Jaka jest jednostka dawki pochłoniętej oraz w jakiej innej jednostce się ją wyraża?",
+          correct: "Jednostką jest grej (1 Gy = 1 J/kg), używa się też centygreja (1 Gy = 100 cGy).",
+          distractors: [
+            "Jednostką jest bekerel (1 Bq = 1 J/kg), używa się też megabekerela.",
+            "Jednostką jest wolt (1 V = 1 J/kg), używa się też miliwolta.",
+            "Jednostką jest dżul na sekundę (1 W = 1 J/kg), używa się też kilowata."
+          ],
+          explanation: "Jednostką dawki pochłoniętej jest grej (1 Gy = 1 J/kg), a w praktyce używa się też centygreja (1 Gy = 100 cGy)."
+        },
+        {
+          id: 31,
+          section: "Część II",
+          q: "Jaki jest podstawowy wzór na dawkę pochłoniętą i jak przekształcić go na energię pochłoniętą lub masę?",
+          correct: "Dawka: D = E/m. Energia pochłonięta: E = D · m. Masa: m = E/D.",
+          distractors: [
+            "Dawka: D = E · m. Energia pochłonięta: E = D/m. Masa: m = D/E.",
+            "Dawka: D = m/E. Energia pochłonięta: E = D + m. Masa: m = D · E.",
+            "Dawka: D = E/m². Energia pochłonięta: E = m/D. Masa: m = E · D."
+          ],
+          explanation: "Zależność D = E/m przekształca się na energię pochłoniętą E = D · m oraz na masę m = E/D."
+        },
+        {
+          id: 32,
+          section: "Część II",
+          q: "Jak zamienić jednostki przed obliczeniem energii pochłoniętej dla masy m = 250 g i dawki D = 180 cGy?",
+          correct: "Masę zamienia się na kilogramy: m = 250 g = 0,25 kg, a dawkę na greje: D = 180 cGy = 1,8 Gy.",
+          distractors: [
+            "Masę zamienia się na 25 kg, a dawkę na 18 Gy.",
+            "Masę zamienia się na 0,025 kg, a dawkę na 0,18 Gy.",
+            "Masę zamienia się na 2,5 kg, a dawkę na 1800 Gy."
+          ],
+          explanation: "250 g to 0,25 kg (dzieląc przez 1000), a 180 cGy to 1,8 Gy (dzieląc przez 100)."
+        },
+        {
+          id: 33,
+          section: "Część II",
+          q: "Oblicz energię pochłoniętą w dżulach, jeśli wiązka przekazała masie wody m = 250 g dawkę D = 180 cGy.",
+          correct: "E = D · m = 1,8 J/kg · 0,25 kg = 0,45 J.",
+          distractors: [
+            "E = D · m = 180 J/kg · 250 kg = 45 000 J.",
+            "E = D / m = 1,8 / 0,25 = 7,2 J.",
+            "E = D · m = 0,18 J/kg · 0,25 kg = 0,045 J."
+          ],
+          explanation: "Po zamianie na jednostki podstawowe: E = 1,8 J/kg · 0,25 kg = 0,45 J."
+        },
+        {
+          id: 34,
+          section: "Część II",
+          q: "Jak przekształcić wzór na dawkę, aby obliczyć masę tkanki przy znanej energii i dawce?",
+          correct: "Przekształca się go do postaci m = E/D.",
+          distractors: [
+            "Przekształca się go do postaci m = E · D.",
+            "Przekształca się go do postaci m = D/E.",
+            "Przekształca się go do postaci m = E + D."
+          ],
+          explanation: "Skoro D = E/m, to po pomnożeniu przez m i podzieleniu przez D otrzymujemy m = E/D."
+        },
+        {
+          id: 35,
+          section: "Część II",
+          q: "Oblicz masę tkanki (w kilogramach i w gramach), w której zaabsorbowano energię E = 0,6 J, co dało dawkę D = 2 Gy.",
+          correct: "m = 0,6 J / (2 J/kg) = 0,3 kg = 300 g.",
+          distractors: [
+            "m = 0,6 J · 2 J/kg = 1,2 kg = 1200 g.",
+            "m = 2 / 0,6 = 3,33 kg = 3330 g.",
+            "m = 0,6 / 2 = 0,03 kg = 30 g."
+          ],
+          explanation: "m = E/D = 0,6 J / (2 J/kg) = 0,3 kg, co odpowiada 300 g."
+        },
+        {
+          id: 36,
+          section: "Część II",
+          q: "Z czego składa się wiązka o widmie monochromatycznym?",
+          correct: "Wiązka monochromatyczna (jednorodna energetycznie) składa się z fotonów o jednej, ściśle określonej energii.",
+          distractors: [
+            "Składa się z elektronów i protonów o ciągłym rozkładzie energii od zera do Emax.",
+            "Składa się wyłącznie z cząstek alfa o losowo zmieniającym się ładunku.",
+            "Składa się z fotonów o równomiernym rozkładzie energii w całym zakresie od 0 do 100 MeV."
+          ],
+          explanation: "Wiązka monochromatyczna jest jednorodna energetycznie — tworzą ją fotony o jednej, ściśle określonej energii."
+        },
+        {
+          id: 37,
+          section: "Część II",
+          q: "Czym charakteryzuje się wiązka o widmie ciągłym i jakie są jej przykłady?",
+          correct: "Zawiera fotony o ciągłym rozkładzie energii od wartości bliskiej zera aż do energii maksymalnej (Emax); przykładem jest promieniowanie hamowania z lampy rtg lub akceleratora fotonowego.",
+          distractors: [
+            "Zawiera wyłącznie fotony o jednej stałej energii równej dokładnie połowie Emax; przykładem jest rozpad Co-60.",
+            "Zawiera tylko ciężkie jony przyspieszane w próżni bez tarczy hamującej.",
+            "Zawiera wyłącznie światło widzialne emitowane przez katodę fotopowielacza."
+          ],
+          explanation: "Widmo ciągłe ma ciągły rozkład energii fotonów od okolic zera do Emax, co jest typowe np. dla promieniowania hamowania z lampy rtg lub akceleratora fotonowego."
+        },
+        {
+          id: 38,
+          section: "Część II",
+          q: "Czy promieniowanie Co-60 ma widmo monochromatyczne?",
+          correct: "W ścisłym sensie fizycznym nie — nie jest to pojedyncza linia energetyczna.",
+          distractors: [
+            "Tak, w ścisłym sensie fizycznym jest to wiązka monochromatyczna o stałej energii 1,25 MeV.",
+            "Tak, ponieważ emituje wyłącznie pojedynczą linię gamma o energii 1,17 MeV.",
+            "Nie, ponieważ jest to widmo ciągłe promieniowania hamowania bez linii dyskretnych."
+          ],
+          explanation: "W ścisłym sensie fizycznym promieniowanie Co-60 nie ma widma monochromatycznego, gdyż nie stanowi pojedynczej linii energetycznej."
+        },
+        {
+          id: 39,
+          section: "Część II",
+          q: "Jakie energie linii gamma towarzyszą rozpadowi Co-60 i jaka średnia energia bywa podawana w radioterapii?",
+          correct: "Rozpadowi Co-60 towarzyszy emisja dwóch głównych linii gamma o energiach w przybliżeniu 1,17 MeV oraz 1,33 MeV, a w radioterapii często upraszcza się to i podaje średnią energię ok. 1,25 MeV.",
+          distractors: [
+            "Towarzyszy mu emisja linii o energiach 0,511 MeV oraz 1,022 MeV, a średnia wynosi 0,75 MeV.",
+            "Towarzyszy mu emisja linii o energiach 4 MeV oraz 6 MeV, a średnia wynosi 5 MeV.",
+            "Towarzyszy mu emisja jednej linii 1,25 MeV bez żadnych innych linii gamma."
+          ],
+          explanation: "Co-60 emituje dwie główne linie gamma ok. 1,17 MeV i 1,33 MeV, co w radioterapii bywa upraszczane do średniej energii ok. 1,25 MeV."
+        },
+        {
+          id: 40,
+          section: "Część II",
+          q: "Czym różni się widmo Co-60 od widma ciągłego promieniowania hamowania?",
+          correct: "W odróżnieniu od widma ciągłego promieniowania hamowania składa się z dyskretnych linii gamma (oraz towarzyszącego promieniowania rozproszonego w źródle i otoczeniu).",
+          distractors: [
+            "Składa się wyłącznie z ciągłego pasma energii bez dyskretnych linii gamma.",
+            "Nie towarzyszy mu żadne promieniowanie rozproszone w źródle ani w otoczeniu.",
+            "Powstaje poprzez hamowanie elektronów na wolframowej tarczy akceleratora."
+          ],
+          explanation: "Widmo Co-60 cechuje obecność dyskretnych linii gamma (z towarzyszącym rozproszeniem w źródle i otoczeniu), a nie ciągłego widma hamowania."
+        },
+        {
+          id: 41,
+          section: "Część II",
+          q: "Jak powstaje wiązka fotonowa w akceleratorze liniowym i jakie ma widmo?",
+          correct: "Powstaje z hamowania elektronów na tarczy i ma widmo ciągłe.",
+          distractors: [
+            "Powstaje z rozpadu promieniotwórczego Co-60 i ma dwie linie dyskretne.",
+            "Powstaje ze zderzeń cząstek alfa w komorze jonizacyjnej i ma widmo monochromatyczne.",
+            "Powstaje z rekombinacji par jonów w powietrzu i ma widmo liniowe."
+          ],
+          explanation: "Wiązka fotonowa w akceleratorze liniowym powstaje wskutek hamowania elektronów na tarczy i charakteryzuje się widmem ciągłym."
+        },
+        {
+          id: 42,
+          section: "Część II",
+          q: "Co oznacza energia nominalna wiązki fotonowej w akceleratorze liniowym (np. 6 MV)?",
+          correct: "Nie oznacza ona, że wszystkie fotony mają energię 6 MeV — odpowiada ona maksymalnej energii widma (energii elektronów padających na tarczę), podczas gdy większość fotonów w wiązce ma energię niższą.",
+          distractors: [
+            "Oznacza, że każdy foton w wiązce ma ściśle energię 6 MeV.",
+            "Oznacza, że minimalna energia każdego fotonu wynosi 6 MeV, a większość ma energię wyższą.",
+            "Oznacza stałe napięcie między katodą a anodą równe 6 V."
+          ],
+          explanation: "Energia nominalna (np. 6 MV) określa maksymalną energię widma (energię elektronów padających na tarczę); większość fotonów ma energię mniejszą niż wartość nominalna."
+        },
+        {
+          id: 43,
+          section: "Część II",
+          q: "Czym jest współczynnik jakości promieniowania TPR20/10?",
+          correct: "TPR20/10 (Tissue Phantom Ratio) to stosunek dawki pochłoniętej na głębokości 20 cm do dawki pochłoniętej na głębokości 10 cm w fantomie wodnym.",
+          distractors: [
+            "TPR20/10 to stosunek dawki na głębokości 10 cm do dawki na głębokości 20 cm w powietrzu.",
+            "TPR20/10 to stosunek dawki maksymalnej do dawki na powierzchni w fantomie wodnym.",
+            "TPR20/10 to grubość warstwy wody zmniejszająca moc dawki z 20 Gy do 10 Gy."
+          ],
+          explanation: "TPR20/10 to iloraz dawki pochłoniętej na głębokości 20 cm i dawki pochłoniętej na głębokości 10 cm w fantomie wodnym."
+        },
+        {
+          id: 44,
+          section: "Część II",
+          q: "W jakich warunkach mierzy się TPR20/10 i jaki jest jego wzór?",
+          correct: "Mierzy się go przy stałej odległości źródło–komora (fantom) i dla określonego rozmiaru pola (standardowo dla pola odniesienia 10 cm × 10 cm): TPR20/10 = D20 / D10.",
+          distractors: [
+            "Mierzy się go przy zmiennej odległości od źródła i dla pola 40 cm × 40 cm: TPR20/10 = D10 / D20.",
+            "Mierzy się go w powietrzu bez fantomu: TPR20/10 = (D20 - D10) / 10.",
+            "Mierzy się go wyłącznie dla promieniowania alfa: TPR20/10 = D20 · D10."
+          ],
+          explanation: "TPR20/10 wyznacza się ze wzoru TPR20/10 = D20/D10 przy stałej odległości źródło–komora (fantom) oraz określonym polu (standardowo 10 cm × 10 cm)."
+        },
+        {
+          id: 45,
+          section: "Część II",
+          q: "Jak energia wiązki fotonowej wpływa na wartość TPR20/10?",
+          correct: "Im wyższa energia wiązki fotonowej, tym większa przenikliwość i wyższa wartość TPR20/10.",
+          distractors: [
+            "Im wyższa energia wiązki fotonowej, tym niższa wartość TPR20/10.",
+            "Wartość TPR20/10 jest stała i nie zależy od energii wiązki fotonowej.",
+            "Im wyższa energia wiązki, tym szybciej dawka spada do zera na 20 cm."
+          ],
+          explanation: "Wyższa energia wiązki fotonowej oznacza większą przenikliwość, więc udział dawki na 20 cm względem 10 cm rośnie — wartość TPR20/10 jest wyższa."
+        },
+        {
+          id: 46,
+          section: "Część II",
+          q: "Czym jest warstwa połowiąca (HVL — Half-Value Layer, zwana też warstwą półchłonną)?",
+          correct: "To grubość określonego materiału pochłaniającego (np. aluminium, miedzi lub ołowiu), która powoduje zmniejszenie natężenia wiązki (lub mocy dawki) o połowę (do 50%) względem wartości początkowej.",
+          distractors: [
+            "To grubość ołowiu, która całkowicie pochłania 100% wiązki promieniowania.",
+            "To odległość od źródła do punktu, w którym dawka rośnie dwukrotnie w fantomie wodnym.",
+            "To połowa grubości kryształu scyntylacyjnego stosowanego w kamerze gamma."
+          ],
+          explanation: "Warstwa połowiąca (HVL) to taka grubość konkretnego pochłaniacza (np. Al, Cu, Pb), która osłabia natężenie wiązki lub moc dawki o 50%."
+        },
+        {
+          id: 47,
+          section: "Część II",
+          q: "Do jakiego rodzaju promieniowania stosuje się przede wszystkim warstwę połowiącą (HVL)?",
+          correct: "Stosuje się ją przede wszystkim do charakteryzowania jakości (przenikliwości) wiązek lamp rentgenowskich (promieniowania X o niższych energiach).",
+          distractors: [
+            "Stosuje się ją przede wszystkim do charakteryzowania cząstek alfa o bardzo małym zasięgu.",
+            "Stosuje się ją wyłącznie do wiązek protonowych o energiach rzędu setek MeV.",
+            "Stosuje się ją wyłącznie do oceny aktywności izotopów w bekerelach."
+          ],
+          explanation: "HVL służy przede wszystkim do opisu jakości (przenikliwości) wiązek lamp rentgenowskich, czyli promieniowania X o niższych energiach."
+        },
+        {
+          id: 48,
+          section: "Część II",
+          q: "Jak zbudowana jest komora jonizacyjna?",
+          correct: "To detektor gazowy (zwykle wypełniony powietrzem) z dwiema elektrodami, między którymi przyłożone jest napięcie polaryzujące.",
+          distractors: [
+            "To kryształ NaI(Tl) sprzężony z układem dynod i fotokatodą w próżni.",
+            "To złącze półprzewodnikowe p-i-n bez gazu i bez elektrod.",
+            "To kapsuła z ciekłym scyntylatorem organicznym bez przyłożonego napięcia."
+          ],
+          explanation: "Komora jonizacyjna jest gazowym detektorem (najczęściej z powietrzem) posiadającym dwie elektrody z przyłożonym napięciem polaryzującym."
+        },
+        {
+          id: 49,
+          section: "Część II",
+          q: "Co dzieje się w komorze jonizacyjnej pod wpływem promieniowania i jak mierzony jest sygnał?",
+          correct: "Promieniowanie jonizuje gaz w objętości czułej komory, tworząc pary jonów; zbierany na elektrodach ładunek elektryczny (Q) jest mierzony elektromierzem.",
+          distractors: [
+            "Promieniowanie wywołuje błysk światła widzialnego, który jest rejestrowany bez pomiaru ładunku.",
+            "Promieniowanie przenosi elektrony z pasma walencyjnego do pasma przewodnictwa w krzemie bez udziału gazu.",
+            "Promieniowanie powoduje wyładowanie lawinowe w każdym przypadku pracy komory jonizacyjnej."
+          ],
+          explanation: "W czułej objętości gazu powstają pary jonów; ładunek elektryczny Q zebrany na elektrodach mierzy elektromierz."
+        },
+        {
+          id: 50,
+          section: "Część II",
+          q: "Jak na podstawie ładunku z komory jonizacyjnej wyznacza się dawkę pochłoniętą?",
+          correct: "Na podstawie zmierzonego ładunku (po uwzględnieniu współczynników korekcyjnych i kalibracyjnych) wyznacza się energię pochłoniętą, a po podzieleniu tej energii przez masę wody uzyskuje się dawkę pochłoniętą (D = E/m).",
+          distractors: [
+            "Dzieli się zmierzony ładunek bezpośrednio przez czas połowicznego rozpadu izotopu bez współczynników korekcyjnych.",
+            "Mnoży się zmierzony ładunek przez grubość warstwy połowiącej w milimetrach.",
+            "Odczytuje się dawkę bezpośrednio z kąta obrotu ramienia głowicy."
+          ],
+          explanation: "Po uwzględnieniu współczynników korekcyjnych i kalibracyjnych z ładunku wyznacza się energię pochłoniętą, a dzieląc ją przez masę wody (D = E/m), uzyskuje się dawkę pochłoniętą."
+        },
+        {
+          id: 51,
+          section: "Część II",
+          q: "Jak w praktyce wyznacza się krzywą PDG (PDD)?",
+          correct: "Wykonuje się serię pomiarów dawki na coraz większych głębokościach wzdłuż osi centralnej wiązki, znajduje wartość maksymalną Dmax i dzieli każdy pomiar przez Dmax, mnożąc przez 100% (przy dzieleniu Dmax przez samego siebie otrzymuje się 100%).",
+          distractors: [
+            "Wykonuje się jeden pomiar na głębokości 10 cm i dzieli przez pomiar na 20 cm, mnożąc przez 50%.",
+            "Mierzy się natężenie światła z fotodiody na różnych kątach i dzieli przez energię nominalną.",
+            "Dzieli się dawkę na powierzchni przez dawkę na głębokości 1 cm i odejmuje 100%."
+          ],
+          explanation: "Krzywą PDG wyznacza się, mierząc dawkę na różnych głębokościach wzdłuż osi wiązki i normując każdy wynik do wartości maksymalnej Dmax: (D / Dmax) · 100%."
+        },
+        {
+          id: 52,
+          section: "Część II",
+          q: "Co widać na wykresie PDG w funkcji głębokości przed maksimum i za maksimum?",
+          correct: "Najpierw widać obszar narastania dawki (build-up) — od powierzchni do maksimum dawki — w którym dawka rośnie wraz z głębokością, a po osiągnięciu maksimum dawka spada wraz ze wzrostem głębokości.",
+          distractors: [
+            "Najpierw dawka spada od powierzchni do maksimum, a za maksimum stale rośnie aż do dna fantomu.",
+            "Wykres jest płaską linią równą 100% od powierzchni aż do głębokości 30 cm.",
+            "Obszar build-up znajduje się wyłącznie za punktem maksimum dawki."
+          ],
+          explanation: "Od powierzchni do maksimum dawki występuje obszar build-up (wzrost PDG z głębokością), natomiast za maksimum PDG maleje wraz ze wzrostem głębokości."
+        },
+        {
+          id: 53,
+          section: "Część II",
+          q: "Jakie są dwa zapisy wzoru na aktywność źródła izotopowego po czasie t?",
+          correct: "A(t) = A0 · (1/2)^(t / T1/2) lub A(t) = A0 · e^(-λ · t).",
+          distractors: [
+            "A(t) = A0 · (t / T1/2) lub A(t) = A0 + λ · t.",
+            "A(t) = A0 / (1/2)^(t / T1/2) lub A(t) = A0 · e^(+λ · t).",
+            "A(t) = A0 - (1/2) · λ · t lub A(t) = E / m."
+          ],
+          explanation: "Prawo rozpadu promieniotwórczego dla aktywności zapisuje się jako A(t) = A0 · (1/2)^(t/T1/2) albo równoważnie A(t) = A0 · e^(-λ·t)."
+        },
+        {
+          id: 54,
+          section: "Część II",
+          q: "Jaka jest jednostka aktywności w układzie SI i jak jest zdefiniowana?",
+          correct: "Jednostką w układzie SI jest bekerel (1 Bq = 1 rozpad/s).",
+          distractors: [
+            "Jednostką w układzie SI jest grej (1 Gy = 1 rozpad/s).",
+            "Jednostką w układzie SI jest dżul (1 J = 1 rozpad/min).",
+            "Jednostką w układzie SI jest wolt (1 V = 1 rozpad/s)."
+          ],
+          explanation: "Jednostką aktywności promieniotwórczej w układzie SI jest bekerel (Bq), definiowany jako jeden rozpad na sekundę (1 Bq = 1 s⁻¹)."
+        },
+        {
+          id: 55,
+          section: "Część II",
+          q: "Co oznaczają symbole A(t), A0, T1/2 oraz λ we wzorze na aktywność?",
+          correct: "A(t) — aktywność po czasie t; A0 — aktywność początkowa (w chwili t = 0); T1/2 — czas połowicznego rozpadu izotopu; λ — stała rozpadu promieniotwórczego.",
+          distractors: [
+            "A(t) — aktywność początkowa; A0 — aktywność po czasie t; T1/2 — stała rozpadu; λ — czas ekspozycji.",
+            "A(t) — dawka w grejach; A0 — energia w dżulach; T1/2 — masa w kilogramach; λ — odległość w centymetrach.",
+            "A(t) — wielkość pola; A0 — odległość izocentryczna; T1/2 — kąt kolimatora; λ — napięcie pracy."
+          ],
+          explanation: "A(t) to aktywność po czasie t, A0 to aktywność początkowa w chwili t = 0, T1/2 to czas połowicznego rozpadu, a λ to stała rozpadu promieniotwórczego."
+        },
+        {
+          id: 56,
+          section: "Część II",
+          q: "Ile wynosi liczba okresów półtrwania n po 15 latach dla izotopu o czasie połowicznego rozpadu T1/2 = 5 lat?",
+          correct: "n = t / T1/2 = 15 / 5 = 3.",
+          distractors: [
+            "n = 15 · 5 = 75.",
+            "n = 5 / 15 = 1/3.",
+            "n = 15 - 5 = 10."
+          ],
+          explanation: "Liczba okresów półtrwania to iloraz czasu t i czasu połowicznego rozpadu T1/2: 15 lat / 5 lat = 3."
+        },
+        {
+          id: 57,
+          section: "Część II",
+          q: "Jaka będzie aktywność źródła o aktywności początkowej A0 = 800 MBq i T1/2 = 5 lat po 15 latach?",
+          correct: "A = 800 MBq · (1/2)³ = 800 MBq · (1/8) = 100 MBq.",
+          distractors: [
+            "A = 800 MBq · (1/2)² = 200 MBq.",
+            "A = 800 MBq · (1/2)⁴ = 50 MBq.",
+            "A = 800 MBq / 3 = 266,7 MBq."
+          ],
+          explanation: "Po 15 latach, czyli 3 okresach półtrwania, aktywność zmniejsza się (1/2)³ = 1/8 razy: 800 MBq · 1/8 = 100 MBq."
+        },
+        {
+          id: 58,
+          section: "Część II",
+          q: "Jaka część aktywności początkowej pozostaje po czasie równym dwóm czasom połowicznego rozpadu (t = 2 · T1/2)?",
+          correct: "Pozostaje (1/2)² = 1/4 aktywności początkowej, czyli A = A0/4.",
+          distractors: [
+            "Pozostaje 1/2 aktywności początkowej, czyli A = A0/2.",
+            "Pozostaje 1/8 aktywności początkowej, czyli A = A0/8.",
+            "Pozostaje 3/4 aktywności początkowej, czyli A = 3·A0/4."
+          ],
+          explanation: "Po każdym okresie półtrwania aktywność spada dwukrotnie, więc po dwóch czasach połowicznego rozpadu pozostaje (1/2)² = 1/4 wartości początkowej."
+        },
+        {
+          id: 59,
+          section: "Część II",
+          q: "Ile wynosiła aktywność początkowa A0, jeśli po czasie t = 2 · T1/2 aktywność spadła do 40 MBq?",
+          correct: "A0 = 4 · A = 4 · 40 MBq = 160 MBq.",
+          distractors: [
+            "A0 = 2 · 40 MBq = 80 MBq.",
+            "A0 = 40 MBq / 4 = 10 MBq.",
+            "A0 = 8 · 40 MBq = 320 MBq."
+          ],
+          explanation: "Skoro po 2 · T1/2 pozostaje 1/4 aktywności początkowej (40 MBq = A0/4), to A0 = 4 · 40 MBq = 160 MBq."
+        },
+        {
+          id: 60,
+          section: "Część III",
+          q: "Na czym polega tzw. geometria standardowa?",
+          correct: "W geometrii standardowej wiązka wchodzi prostopadle do prostopadłościennego, jednorodnego fantomu wodnego.",
+          distractors: [
+            "W geometrii standardowej wiązka pada pod kątem 45° na kulisty fantom z ołowiu.",
+            "W geometrii standardowej wiązka jest kierowana równolegle do powierzchni fantomu bez wnikania w głąb.",
+            "W geometrii standardowej pomiar wykonuje się wyłącznie w powietrzu bez fantomu."
+          ],
+          explanation: "Geometria standardowa to układ, w którym wiązka wchodzi prostopadle do jednorodnego, prostopadłościennego fantomu wodnego."
+        },
+        {
+          id: 61,
+          section: "Część III",
+          q: "Dlaczego w analizie rozkładów dawki stosuje się fantom wodny?",
+          correct: "Stosuje się go, ponieważ oddziaływanie promieniowania z tkankami ludzkimi — a w szczególności z tkanką miękką — jest zbliżone do oddziaływania z wodą.",
+          distractors: [
+            "Ponieważ woda ma dokładnie taką samą gęstość elektronową jak kość korowa i ołów.",
+            "Ponieważ woda całkowicie blokuje promieniowanie fotonowe już na głębokości 1 mm.",
+            "Ponieważ woda jest jedynym ośrodkiem, w którym nie zachodzi jonizacja."
+          ],
+          explanation: "Woda jest tkankopodobna w zakresie oddziaływań z promieniowaniem, szczególnie w odniesieniu do tkanki miękkiej."
+        },
+        {
+          id: 62,
+          section: "Część III",
+          q: "Jakie trzy podstawowe wskaźniki aktualnych parametrów wiązki wymienia się przy opisie aparatów terapeutycznych?",
+          correct: "Wymienia się wskaźniki: wielkości pola, kąta obrotu ramienia głowicy oraz kąta skręcenia kolimatora.",
+          distractors: [
+            "Wymienia się wskaźniki: aktywności w bekerelach, masy fantomu oraz grubości ołowiu.",
+            "Wymienia się wskaźniki: tętna pacjenta, ciśnienia tętniczego oraz saturacji.",
+            "Wymienia się wskaźniki: liczby dynod, temperatury katody oraz natężenia fotoprądu."
+          ],
+          explanation: "Podstawowe wskaźniki aktualnych parametrów wiązki dotyczą wielkości pola, kąta obrotu ramienia głowicy i kąta skręcenia kolimatora."
+        },
+        {
+          id: 63,
+          section: "Część III",
+          q: "Jakie dodatkowe wskaźniki mogą mieć niektóre aparaty kobaltowe?",
+          correct: "Niektóre typy aparatów do telegammaterapii kobaltem, ze względu na dodatkowe możliwości ruchu głowicy, mają dodatkowe wskaźniki opisujące te ruchy.",
+          distractors: [
+            "Żaden aparat kobaltowy nie może mieć żadnych dodatkowych wskaźników ruchu.",
+            "Aparaty kobaltowe mają wskaźniki wyłącznie dla wiązek elektronowych o energii 25 MeV.",
+            "Aparaty kobaltowe mają wskaźniki wyłącznie czasu rozpadu komory jonizacyjnej."
+          ],
+          explanation: "Część aparatów do telegammaterapii kobaltem ma dodatkowe możliwości ruchu głowicy, co wiąże się z dodatkowymi wskaźnikami tych ruchów."
+        },
+        {
+          id: 64,
+          section: "Część III",
+          q: "Czym jest płaszczyzna izocentryczna?",
+          correct: "Płaszczyzna izocentryczna to płaszczyzna prostopadła do osi centralnej wiązki znajdująca się w odległości izocentrycznej.",
+          distractors: [
+            "Płaszczyzna izocentryczna to płaszczyzna równoległa do osi centralnej wiązki przechodząca przez tarcze kolimatora.",
+            "Płaszczyzna izocentryczna to powierzchnia zewnętrznej obudowy głowicy przyspieszacza.",
+            "Płaszczyzna izocentryczna to płaszczyzna przechodząca przez fotokatodę i anodę."
+          ],
+          explanation: "Płaszczyzna izocentryczna jest prostopadła do osi centralnej wiązki i leży w odległości izocentrycznej."
+        },
+        {
+          id: 65,
+          section: "Część III",
+          q: "Co dzieje się z odległością od źródła do punktu izocentrycznego podczas obrotu głowicy?",
+          correct: "W trakcie obrotu głowicy odległość od źródła promieniowania do punktu izocentrycznego pozostaje stała.",
+          distractors: [
+            "Podczas obrotu głowicy odległość ta rośnie dwukrotnie co 90°.",
+            "Podczas obrotu głowicy odległość ta spada do zera przy kącie 180°.",
+            "Podczas obrotu głowicy odległość ta zmienia się losowo w zależności od wielkości pola."
+          ],
+          explanation: "Punkt izocentryczny leży na przecięciu osi centralnej wiązki i osi obrotu ramienia głowicy, więc odległość od źródła do niego podczas obrotu głowicy jest stała."
+        },
+        {
+          id: 66,
+          section: "Część III",
+          q: "Jakie możliwości daje niezależny ruch w parach kolimatorów?",
+          correct: "Pozwala na uzyskiwanie niesymetrycznych pól promieniowania względem osi centralnej (a w konstrukcjach z możliwością ustawienia jednej szczęki w pozycji zerowej i rozwarcia drugiej — wiązki rozbieżnej tylko z jednej strony, co ułatwia m.in. łączenie pól).",
+          distractors: [
+            "Pozwala jedynie na równoczesne i symetryczne otwieranie obu szczęk zawsze z tą samą szerokością.",
+            "Pozwala na zmianę izotopu promieniotwórczego wewnątrz głowicy bez wyłączania wiązki.",
+            "Pozwala na skrócenie czasu połowicznego rozpadu źródła Co-60."
+          ],
+          explanation: "Niezależny ruch szczęk kolimatora umożliwia tworzenie pól niesymetrycznych względem osi centralnej oraz wiązki rozbieżnej tylko z jednej strony (co ułatwia m.in. łączenie pól)."
+        },
+        {
+          id: 67,
+          section: "Część III",
+          q: "Z czego składają się kolimatory wieloelementowe (wielolistkowe) i co umożliwiają?",
+          correct: "Składają się z wielu niezależnie sterowanych komputerowo elementów, co pozwala uzyskać niemal dowolny kształt wiązki promieniowania.",
+          distractors: [
+            "Składają się z dwóch nieruchomych bloków ołowiu i dają wyłącznie pola kwadratowe.",
+            "Składają się ze szklanych soczewek i służą tylko do ogniskowania światła telemetru.",
+            "Składają się z kryształów scyntylacyjnych i mierzą wyłącznie promieniowanie alfa."
+          ],
+          explanation: "Kolimatory wielolistkowe (MLC) mają wiele niezależnie sterowanych komputerowo listków/elementów, dzięki czemu pozwalają formować niemal dowolny kształt wiązki."
+        },
+        {
+          id: 68,
+          section: "Część III",
+          q: "Czym jest pole świetlne?",
+          correct: "To pole symulowane wiązką światła (w momencie symulacji w miejscu źródła promieniowania umieszcza się źródło światła oświetlające przestrzeń ostrosłupa wiązki).",
+          distractors: [
+            "To obszar w fantomie wodnym, w którym dawka promieniowania jest równa zeru.",
+            "To wiązka laserowa służąca wyłącznie do pomiaru tętna pacjenta.",
+            "To rozkład izodoz wyświetlany na ekranie tomografu komputerowego."
+          ],
+          explanation: "Pole świetlne odwzorowuje geometrię wiązki za pomocą źródła światła umieszczonego w miejscu źródła promieniowania, oświetlającego przestrzeń ostrosłupa wiązki."
+        },
+        {
+          id: 69,
+          section: "Część III",
+          q: "Do czego służy telemetr w aparacie terapeutycznym?",
+          correct: "Telemetr to specjalny układ optyczny umożliwiający odczytanie odległości od źródła promieniowania do punktu położonego na osi centralnej wiązki.",
+          distractors: [
+            "Telemetr to elektromierz mierzący ładunek zbierany w komorze jonizacyjnej.",
+            "Telemetr to układ chłodzenia tarczy wolframowej w przyspieszaczu liniowym.",
+            "Telemetr to dawkomierz termoluminescencyjny umieszczany w jamie ustnej."
+          ],
+          explanation: "Telemetr jest układem optycznym pozwalającym odczytać odległość od źródła promieniowania do punktu na osi centralnej wiązki."
+        },
+        {
+          id: 70,
+          section: "Część III",
+          q: "Jakie są typowe wartości odległości izocentrycznej dla aparatów Co-60 i przyspieszaczy?",
+          correct: "Dla większości aparatów Co-60 oraz przyspieszaczy o energii nominalnej nie wyższej niż 4 MV wynosi 80 cm (w ostatnich latach promowane są też kobalty z odległością 100 cm), a w pozostałych przyspieszaczach wynosi 100 cm.",
+          distractors: [
+            "Dla wszystkich aparatów Co-60 i przyspieszaczy wynosi zawsze 50 cm.",
+            "Dla większości aparatów Co-60 i przyspieszaczy ≤ 4 MV wynosi 100 cm, a w pozostałych przyspieszaczach 80 cm.",
+            "Dla każdego aparatu terapeutycznego wynosi 200 cm."
+          ],
+          explanation: "Typowo odległość izocentryczna wynosi 80 cm dla większości aparatów Co-60 i przyspieszaczy ≤ 4 MV (spotyka się też kobalty 100 cm), a w pozostałych przyspieszaczach 100 cm."
+        },
+        {
+          id: 71,
+          section: "Część III",
+          q: "Jaka jest typowa maksymalna wielkość boku pola w aparatach kobaltowych i przyspieszaczach?",
+          correct: "Zwykle do ok. 35 cm w aparatach kobaltowych oraz zwykle 40 cm w przyspieszaczach.",
+          distractors: [
+            "Zwykle do 10 cm w aparatach kobaltowych oraz 15 cm w przyspieszaczach.",
+            "Zwykle do 100 cm zarówno w aparatach kobaltowych, jak i w przyspieszaczach.",
+            "Zwykle do 5 cm w aparatach kobaltowych oraz 8 cm w przyspieszaczach."
+          ],
+          explanation: "Maksymalny bok pola to zwykle ok. 35 cm w aparatach kobaltowych oraz zwykle 40 cm w przyspieszaczach."
+        },
+        {
+          id: 72,
+          section: "Część III",
+          q: "Jaki wzór opisuje zmianę wymiaru pola ze względu na rozbieżność wiązki w zależności od odległości?",
+          correct: "Zależność zapisuje się wzorem: AFakt = AFI · (Fakt / FI).",
+          distractors: [
+            "Zależność zapisuje się wzorem: AFakt = AFI · (FI / Fakt).",
+            "Zależność zapisuje się wzorem: AFakt = AFI + Fakt - FI.",
+            "Zależność zapisuje się wzorem: AFakt = AFI / (Fakt · FI)."
+          ],
+          explanation: "Ze względu na rozbieżność wiązki wymiar pola zmienia się proporcjonalnie do odległości: AFakt = AFI · (Fakt / FI)."
+        },
+        {
+          id: 73,
+          section: "Część III",
+          q: "Co oznaczają symbole AFI, Fakt, FI oraz AFakt we wzorze na wymiar pola?",
+          correct: "AFI — wielkość pola w odległości izocentrycznej FI; Fakt — aktualna odległość od źródła; AFakt — wielkość pola w tej aktualnej odległości.",
+          distractors: [
+            "AFI — aktualna odległość od źródła; Fakt — wielkość pola w izocentrum; FI — dawka na powierzchni; AFakt — aktywność źródła.",
+            "AFI — dawka na głębokości 10 cm; Fakt — dawka na 20 cm; FI — masa fantomu; AFakt — energia wiązki.",
+            "AFI — czas połowicznego rozpadu; Fakt — czas ekspozycji; FI — stała rozpadu; AFakt — ładunek w komorze."
+          ],
+          explanation: "FI to odległość izocentryczna, AFI to wielkość pola w tej odległości, Fakt to aktualna odległość od źródła, a AFakt to wymiar pola w aktualnej odległości."
+        },
+        {
+          id: 74,
+          section: "Część IV",
+          q: "Jaki odsetek wszystkich nowotworów złośliwych i jaki odsetek nowotworów wewnątrz jamy ustnej stanowi rak dna jamy ustnej?",
+          correct: "Stanowi około 1,5% wszystkich nowotworów złośliwych oraz około 17% nowotworów wewnątrz jamy ustnej.",
+          distractors: [
+            "Stanowi około 17% wszystkich nowotworów złośliwych oraz około 1,5% nowotworów wewnątrz jamy ustnej.",
+            "Stanowi około 50% wszystkich nowotworów złośliwych oraz około 80% nowotworów jamy ustnej.",
+            "Stanowi około 0,1% wszystkich nowotworów złośliwych oraz około 2% nowotworów jamy ustnej."
+          ],
+          explanation: "Rak dna jamy ustnej to ok. 1,5% wszystkich nowotworów złośliwych i ok. 17% nowotworów zlokalizowanych wewnątrz jamy ustnej."
+        },
+        {
+          id: 75,
+          section: "Część IV",
+          q: "W jakim wieku najczęściej występuje rak dna jamy ustnej i jak różni się ryzyko między płciami?",
+          correct: "Najczęściej występuje po 40. roku życia, a ryzyko jest ponad dwukrotnie wyższe u mężczyzn niż u kobiet.",
+          distractors: [
+            "Najczęściej występuje przed 18. rokiem życia, a ryzyko jest wyższe u kobiet niż u mężczyzn.",
+            "Najczęściej występuje wyłącznie u noworodków, a ryzyko jest identyczne u obu płci.",
+            "Najczęściej występuje po 80. roku życia i dotyczy dziesięciokrotnie częściej kobiet."
+          ],
+          explanation: "Rak dna jamy ustnej pojawia się najczęściej po 40. roku życia, a ryzyko zachorowania u mężczyzn jest ponad dwukrotnie wyższe niż u kobiet."
+        },
+        {
+          id: 76,
+          section: "Część IV",
+          q: "Jaki typ histologiczny mają zazwyczaj nowotwory jamy ustnej?",
+          correct: "Zwykle zaczynają się w komórkach łuskowatych wyścielających usta i wnętrze jamy ustnej — są to raki płaskonabłonkowe.",
+          distractors: [
+            "Zwykle są to chłoniaki z komórek T zlokalizowane w szpiku kostnym.",
+            "Zwykle są to glejaki wywodzące się z komórek gleju gwiaździstego mózgu.",
+            "Zwykle są to czerniaki wyłącznie o pochodzeniu wrodzonym na siatkówce oka."
+          ],
+          explanation: "Nowotwory jamy ustnej rozwijają się zazwyczaj w komórkach łuskowatych wyścielających jamę ustną i usta — dominującym typem są raki płaskonabłonkowe."
+        },
+        {
+          id: 77,
+          section: "Część IV",
+          q: "Gdzie może powstać rak dna jamy ustnej, gdzie lokalizuje się najczęściej i jak często dotyczy linii środkowej?",
+          correct: "Może powstać w dowolnym punkcie wzdłuż łukowatej powierzchni błony śluzowej między językiem a żuchwą, ale najczęstsze miejsce znajduje się w przedniej części łuku (wiele zmian pojawia się w linii środkowej, w jej pobliżu lub ją przecina).",
+          distractors: [
+            "Może powstać wyłącznie na podniebieniu twardym, a najczęstsze miejsce leży na tylnej ścianie gardła.",
+            "Może powstać wyłącznie na migdałkach podniebiennych i nigdy nie leży w pobliżu linii środkowej.",
+            "Może powstać wyłącznie na dziąśle górnym po stronie prawej."
+          ],
+          explanation: "Zmiana może rozwinąć się wzdłuż łukowatej błony śluzowej między językiem a żuchwą, najczęściej w przedniej części łuku, często w linii środkowej, blisko niej lub ją przecinając."
+        },
+        {
+          id: 78,
+          section: "Część IV",
+          q: "Z czym bywa mylony rak dna jamy ustnej?",
+          correct: "Zmiany chorobowe są zwykle postrzegane jako wrzody o nieregularnych kształtach i bardzo często są z nimi mylone.",
+          distractors: [
+            "Bardzo często bywa mylony z prostym złamaniem obojczyka lub skręceniem kostki.",
+            "Bardzo często bywa mylony z zaćmą starczą lub jaskrą.",
+            "Bardzo często bywa mylony z kamicą pęcherzyka żółciowego."
+          ],
+          explanation: "Zmiany w przebiegu raka dna jamy ustnej przybierają zwykle postać wrzodów o nieregularnych kształtach i bywają z nimi mylone."
+        },
+        {
+          id: 79,
+          section: "Część IV",
+          q: "Jak może przebiegać rak dna jamy ustnej we wczesnych stadiach?",
+          correct: "We wczesnych stadiach choroba może nie dawać objawów.",
+          distractors: [
+            "We wczesnych stadiach zawsze powoduje natychmiastową utratę przytomności.",
+            "We wczesnych stadiach zawsze objawia się całkowitym bezgłosem i paraliżem twarzy.",
+            "We wczesnych stadiach nigdy nie jest bezobjawowy."
+          ],
+          explanation: "Wczesne stadia raka dna jamy ustnej mogą przebiegać bezobjawowo."
+        },
+        {
+          id: 80,
+          section: "Część IV",
+          q: "Jakie zmiany na błonie śluzowej, języku, skórze lub w postaci owrzodzeń i guzków mogą wystąpić w raku dna jamy ustnej?",
+          correct: "Plamki na błonie śluzowej jamy ustnej lub języka (zwykle w kolorze czerwonym lub czerwonym i białym), owrzodzenia jamy ustnej lub rany, które się nie goją, obrzęk utrzymujący się przez ponad 3 tygodnie oraz guzek lub zgrubienie skóry albo błony śluzowej jamy ustnej.",
+          distractors: [
+            "Wyłącznie sine wybroczyny na podeszwach stóp utrzymujące się krócej niż 2 godziny.",
+            "Wyłącznie pęcherze na powiekach bez zmian w jamie ustnej.",
+            "Wyłącznie przebarwienia paznokci rąk bez żadnych zmian na błonie śluzowej."
+          ],
+          explanation: "Do zmian miejscowych należą czerwone lub czerwono-białe plamki na śluzówce lub języku, niegojące się owrzodzenia/rany, obrzęk trwający ponad 3 tygodnie oraz guzek lub zgrubienie."
+        },
+        {
+          id: 81,
+          section: "Część IV",
+          q: "Jakie inne objawy ze strony jamy ustnej, gardła, krtani, szczęki, szyi lub ucha mogą wystąpić?",
+          correct: "Ból podczas połykania, wypadanie zębów oraz źle dopasowane protezy, ból szczęki lub sztywność, ból gardła, uczucie obcego ciała w gardle, tkliwość języka, chrypka oraz ból szyi lub ucha, który nie ustępuje.",
+          distractors: [
+            "Wyłącznie ból pięty podczas biegania i pieczenie oczu przy czytaniu.",
+            "Wyłącznie drętwienie palców u stóp i duszność wysiłkowa przy wchodzeniu po schodach.",
+            "Żaden z tych objawów nie występuje w raku dna jamy ustnej."
+          ],
+          explanation: "Wśród objawów wymienia się m.in. ból przy połykaniu, wypadanie zębów, źle dopasowane protezy, ból lub sztywność szczęki, ból gardła, uczucie ciała obcego w gardle, tkliwość języka, chrypkę oraz nieustępujący ból szyi lub ucha."
+        },
+        {
+          id: 82,
+          section: "Część IV",
+          q: "Jakie są główne czynniki ryzyka raka jamy ustnej związane z używkami?",
+          correct: "Główne czynniki ryzyka to używanie tytoniu i alkoholu.",
+          distractors: [
+            "Główne czynniki ryzyka to picie wody niegazowanej i herbaty ziołowej.",
+            "Główne czynniki ryzyka to żucie gumy bez cukru i mycie zębów po posiłkach.",
+            "Główne czynniki ryzyka to sen trwający 8 godzin i jazda na rowerze."
+          ],
+          explanation: "Główne czynniki ryzyka raka jamy ustnej związane z używkami to tytoń oraz alkohol."
+        },
+        {
+          id: 83,
+          section: "Część IV",
+          q: "Jak zmienia się ryzyko raka jamy ustnej u palaczy oraz u osób łączących palenie z alkoholem?",
+          correct: "Palacze są 3 razy bardziej narażeni niż osoby niepalące, a osoby dodatkowo spożywające alkohol mają do 30 razy większe ryzyko wystąpienia tego nowotworu.",
+          distractors: [
+            "Palacze są 3 razy mniej narażeni niż osoby niepalące, a alkohol zmniejsza ryzyko o połowę.",
+            "Palacze mają 30 razy mniejsze ryzyko, a osoby pijące alkohol — 3 razy mniejsze.",
+            "Zarówno palenie, jak i alkohol nie zmieniają ryzyka w porównaniu z osobami niepijącymi i niepalącymi."
+          ],
+          explanation: "Ryzyko u palaczy jest 3-krotnie wyższe niż u niepalących, a u osób łączących palenie z alkoholem rośnie nawet do 30 razy."
+        },
+        {
+          id: 84,
+          section: "Część IV",
+          q: "Jakie czynniki środowiskowe, zawodowe i nawyki (poza tytoniem i alkoholem) zwiększają ryzyko raka jamy ustnej?",
+          correct: "Ekspozycja na promieniowanie ultrafioletowe (słońce, lampy słoneczne, solaria), regularne żucie orzechów betel oraz narażenie na niektóre chemikalia (zwłaszcza azbest, kwas siarkowy i formaldehyd).",
+          distractors: [
+            "Przebywanie w klimatyzowanych pomieszczeniach i noszenie okularów korekcyjnych.",
+            "Jedzenie jabłek i orzechów włoskich raz w tygodniu.",
+            "Oglądanie telewizji w ciemnym pokoju i pływanie w basenie."
+          ],
+          explanation: "Poza tytoniem i alkoholem znaczenie mają promieniowanie UV (słońce, lampy, solaria), regularne żucie orzechów betel oraz chemikalia takie jak azbest, kwas siarkowy i formaldehyd."
+        },
+        {
+          id: 85,
+          section: "Część IV",
+          q: "Jakie stany chorobowe, zakażenia i wcześniejsze leczenie należą do innych czynników ryzyka raka jamy ustnej?",
+          correct: "Refluks żołądkowo-przełykowy (GERD), leukoplakia, zakażenie wirusem brodawczaka ludzkiego (HPV), przewlekłe zapalenie języka oraz uprzednia radioterapia (w szczególności w obrębie głowy lub szyi).",
+          distractors: [
+            "Krótkowzroczność, płaskostopie, alergia na pyłki traw i astma oskrzelowa.",
+            "Złamanie kości udowej w dzieciństwie i usunięcie wyrostka robaczkowego.",
+            "Niedobór witaminy D zdiagnozowany w badaniu krwi bez żadnych zmian śluzówkowych."
+          ],
+          explanation: "Do innych czynników ryzyka należą GERD, leukoplakia, zakażenie HPV, przewlekłe zapalenie języka oraz przebyta radioterapia (zwłaszcza głowy lub szyi)."
+        },
+        {
+          id: 86,
+          section: "Część IV",
+          q: "Jakie czynniki żywieniowe wymienia się wśród innych czynników ryzyka raka jamy ustnej?",
+          correct: "Dieta bogata w czerwone mięso, przetworzone mięso i smażone potrawy.",
+          distractors: [
+            "Dieta bogata w warzywa, owoce i produkty pełnoziarniste.",
+            "Dieta oparta na oliwie z oliwek i oleju rybnym.",
+            "Dieta całkowicie pozbawiona jakichkolwiek białek."
+          ],
+          explanation: "Wśród niekorzystnych czynników żywieniowych wymienia się dietę bogatą w czerwone mięso, przetworzone mięso oraz smażone potrawy."
+        },
+        {
+          id: 87,
+          section: "Część IV",
+          q: "Jak wygląda wstępne rozpoznanie raka jamy ustnej?",
+          correct: "Na początku wykonywana jest biopsja (pobranie małej próbki tkanki pod kątem obecności komórek nowotworowych).",
+          distractors: [
+            "Na początku zawsze wykonuje się wyłącznie pomiar HVL w fantomie wodnym.",
+            "Na początku podaje się pacjentowi przeciwciała monoklonalne bez pobierania tkanki.",
+            "Na początku wykonuje się wyłącznie scyntygrafię kości z użyciem dynod."
+          ],
+          explanation: "Podstawą rozpoznania jest biopsja, czyli pobranie niewielkiej próbki tkanki do oceny obecności komórek nowotworowych."
+        },
+        {
+          id: 88,
+          section: "Część IV",
+          q: "Jakie badania wykonuje się po rozpoznaniu w celu określenia stadium choroby?",
+          correct: "Wykonuje się badanie endoskopowe (sprawdzenie przerzutów na sąsiednie tkanki) oraz testy obrazowe: prześwietlenie rentgenowskie, tomografię komputerową (CT) i rezonans magnetyczny (MRI).",
+          distractors: [
+            "Wykonuje się wyłącznie badanie wzroku u okulisty i EKG spoczynkowe.",
+            "Wykonuje się tylko pomiar aktywności źródła Co-60 i badanie moczu.",
+            "Nie wykonuje się żadnych dodatkowych badań po biopsji."
+          ],
+          explanation: "Do oceny zaawansowania (stadium choroby) wykorzystuje się endoskopię (ocena szerzenia się na sąsiednie tkanki) oraz badania obrazowe: RTG, CT i MRI."
+        },
+        {
+          id: 89,
+          section: "Część IV",
+          q: "Jakie cztery główne metody leczenia raka dna jamy ustnej stosuje się w praktyce klinicznej?",
+          correct: "Leczenie chirurgiczne, radioterapię (w tym brachyterapię), chemioterapię oraz celowaną terapię lekową (przeciwciała monoklonalne), często w skojarzeniu.",
+          distractors: [
+            "Chirurgię plastyczną nosa, dializoterapię, przeszczep rogówki i insulinoterapię.",
+            "Wyłącznie antybiotykoterapię, okłady z lodu, masaż szyi i fizykoterapię.",
+            "Brachyterapię, akupunkturę, hydroterapię i leczenie pijawkami."
+          ],
+          explanation: "Stosuje się chirurgię, radioterapię (w tym brachyterapię), chemioterapię oraz terapię celowaną (przeciwciała monoklonalne), często łącząc metody."
+        },
+        {
+          id: 90,
+          section: "Część IV",
+          q: "Co wchodzi w skład leczenia chirurgicznego raka dna jamy ustnej?",
+          correct: "Wycięcie guza z marginesem zdrowej tkanki; przy większych guzach usunięcie części języka lub szczęki; przy przerzutach do węzłów chłonnych szyi — usunięcie nowotworowych węzłów chłonnych i pokrewnej tkanki w szyi.",
+          distractors: [
+            "Wyłącznie wycięcie migdałków bez marginesu zdrowej tkanki i bez oceny węzłów szyjnych.",
+            "Wyłącznie wszczepienie stymulatora nerwu błędnego na klatce piersiowej.",
+            "Wyłącznie założenie opatrunku uciskowego na czoło bez naruszania błony śluzowej."
+          ],
+          explanation: "Chirurgia obejmuje usunięcie guza z marginesem zdrowej tkanki, przy większych zmianach resekcję części języka lub szczęki, a przy przerzutach węzłowych — usunięcie zmienionych węzłów chłonnych szyi i sąsiedniej tkanki."
+        },
+        {
+          id: 91,
+          section: "Część IV",
+          q: "Jak działa i kiedy bywa stosowana radioterapia zewnętrzna w raku dna jamy ustnej?",
+          correct: "Wykorzystuje wiązki wysokoenergetycznych promieni rentgenowskich lub cząstek do uszkodzenia DNA komórek nowotworowych; stosowana jest np. we wczesnym stadium lub przy przerzutach razem z chemioterapią.",
+          distractors: [
+            "Wykorzystuje fale dźwiękowe o niskiej częstotliwości do rozbijania kamieni i stosuje się ją wyłącznie u dzieci.",
+            "Wykorzystuje światło widzialne z fotodiody i nigdy nie jest łączona z chemioterapią.",
+            "Działa poprzez podgrzewanie komórek zdrowych do 100°C w celu ich ochrony."
+          ],
+          explanation: "Radioterapia uszkadza DNA komórek nowotworowych za pomocą wysokoenergetycznego promieniowania X lub cząstek, np. we wczesnym stadium choroby albo w skojarzeniu z chemioterapią przy przerzutach."
+        },
+        {
+          id: 92,
+          section: "Część IV",
+          q: "Na czym polega i kiedy często stosuje się brachyterapię?",
+          correct: "Jest często stosowana we wczesnym stadium raka języka — druty lub igły radioaktywne są przyklejane bezpośrednio do guza.",
+          distractors: [
+            "Polega na napromienianiu całego ciała z odległości 5 metrów za pomocą przyspieszacza liniowego.",
+            "Polega na podawaniu tabletki z ołowiem doustnie raz na miesiąc w zaawansowanym stadium.",
+            "Polega na chłodzeniu języka ciekłym azotem bez użycia źródeł promieniotwórczych."
+          ],
+          explanation: "Brachyterapia bywa stosowana m.in. we wczesnym stadium raka języka — druty lub igły radioaktywne umieszcza się/przykleja bezpośrednio przy guzie."
+        },
+        {
+          id: 93,
+          section: "Część IV",
+          q: "Jakie działania związane ze stylem życia i unikaniem ekspozycji zmniejszają ryzyko raka jamy ustnej?",
+          correct: "Rzucenie palenia, spożywanie alkoholu z umiarem lub wcale, unikanie nadmiernego nasłonecznienia i stosowanie kremu przeciwsłonecznego na ustach oraz regularna aktywność fizyczna.",
+          distractors: [
+            "Częste korzystanie z solarium bez ochrony ust oraz codzienne palenie cygar.",
+            "Całkowite unikanie ruchu i spożywanie dużych ilości wysokoprocentowego alkoholu.",
+            "Stosowanie samoopalacza na błonę śluzową jamy ustnej."
+          ],
+          explanation: "Profilaktyka obejmuje rezygnację z palenia, ograniczenie lub unikanie alkoholu, ochronę przed UV (w tym pomadkę/krem z filtrem na usta) oraz regularną aktywność fizyczną."
+        },
+        {
+          id: 94,
+          section: "Część IV",
+          q: "Jakie nawyki żywieniowe zmniejszają ryzyko raka jamy ustnej?",
+          correct: "Unikanie fast foodów, tłuszczów nasyconych i przetworzonych mięs oraz stosowanie zdrowej diety bogatej w owoce, warzywa, olej rybny, oliwę z oliwek, produkty pełnoziarniste i małe ilości chudego białka odzwierzęcego lub roślinnego.",
+          distractors: [
+            "Codzienne spożywanie fast foodów, tłuszczów nasyconych i wędlin przetworzonych przy braku warzyw i owoców.",
+            "Spożywanie wyłącznie cukru rafinowanego i smażonych potraw.",
+            "Całkowite wykluczenie warzyw, owoców i produktów pełnoziarnistych."
+          ],
+          explanation: "W profilaktyce żywieniowej ogranicza się fast foody, tłuszcze nasycone i mięso przetworzone, a stawia na warzywa, owoce, olej rybny, oliwę z oliwek, pełne ziarna i umiarkowane ilości chudego białka."
+        },
+        {
+          id: 95,
+          section: "Część V",
+          q: "Czym jest jon i jak dzieli się na kation oraz anion?",
+          correct: "To atom lub cząsteczka, która straciła (jon dodatni — kation) albo zyskała (jon ujemny — anion) co najmniej jeden elektron, przez co ma ładunek elektryczny różny od zera.",
+          distractors: [
+            "To atom, który stracił wszystkie protony z jądra, stając się neutralny elektrycznie.",
+            "To foton bez masy spoczynkowej, który ma zawsze ładunek ujemny.",
+            "To cząsteczka wody, która nie może posiadać ładunku elektrycznego."
+          ],
+          explanation: "Jon powstaje, gdy atom lub cząsteczka straci (kation, ładunek dodatni) lub zyska (anion, ładunek ujemny) co najmniej jeden elektron, zyskując ładunek niezerowy."
+        },
+        {
+          id: 96,
+          section: "Część V",
+          q: "Jak powstają jony w detektorach promieniowania?",
+          correct: "Powstają wskutek jonizacji ośrodka przez promieniowanie jonizujące.",
+          distractors: [
+            "Powstają wyłącznie wskutek podgrzewania anody do 2000°C bez promieniowania.",
+            "Powstają wskutek rozpadu promieniotwórczego samego kabla sygnałowego.",
+            "Powstają wyłącznie podczas odbijania światła widzialnego od lustra."
+          ],
+          explanation: "W detektorach promieniowania jony tworzą się w wyniku jonizacji ośrodka (np. gazu) przez promieniowanie jonizujące."
+        },
+        {
+          id: 97,
+          section: "Część V",
+          q: "Czym jest komora jonizacyjna i jak jest zbudowana?",
+          correct: "To detektor promieniowania jonizującego wypełniony gazem (najczęściej powietrzem), wyposażony w dwie elektrody (katodę i anodę), między którymi przyłożone jest napięcie.",
+          distractors: [
+            "To kryształ scyntylacyjny bez gazu, wyposażony w dziesięć dynod.",
+            "To dioda półprzewodnikowa pracująca wyłącznie w paśmie podczerwonym.",
+            "To fantom wodny używany wyłącznie do pomiaru kąta kolimatora."
+          ],
+          explanation: "Komora jonizacyjna zawiera gaz (zazwyczaj powietrze) oraz dwie elektrody — katodę i anodę — z przyłożonym napięciem."
+        },
+        {
+          id: 98,
+          section: "Część V",
+          q: "Jak działanie komory jonizacyjnej prowadzi do wyznaczenia energii pochłoniętej i dawki?",
+          correct: "Powstałe pod wpływem promieniowania pary jonów są zbierane przez elektrody, a zmierzony ładunek pozwala wyznaczyć energię pochłoniętą i dawkę.",
+          distractors: [
+            "Elektrody liczą liczbę błysków UV bez zbierania ładunku elektrycznego.",
+            "Zmierzony czas rozpadu izotopu pozwala bezpośrednio odczytać dawkę bez pomiaru ładunku.",
+            "Napięcie na anodzie spada do zera, co odpowiada wartości dawki w grejach."
+          ],
+          explanation: "Zbierane na elektrodach pary jonów dają mierzalny ładunek, na podstawie którego wyznacza się energię pochłoniętą i dawkę."
+        },
+        {
+          id: 99,
+          section: "Część V",
+          q: "Czym jest napięcie pracy detektora?",
+          correct: "To napięcie przyłożone do elektrod detektora podczas pomiaru, dobrane tak, aby detektor pracował we właściwym dla siebie zakresie charakterystyki.",
+          distractors: [
+            "To napięcie sieciowe w gniazdku ściennym niezależne od typu detektora.",
+            "To różnica potencjałów między pacjentem a stołem terapeutycznym.",
+            "To napięcie pojawiające się wyłącznie po wyłączeniu zasilania detektora."
+          ],
+          explanation: "Napięcie pracy to napięcie przyłożone do elektrod w trakcie pomiaru, dobrane do pożądanego zakresu charakterystyki danego detektora."
+        },
+        {
+          id: 100,
+          section: "Część V",
+          q: "Jaki zakres charakterystyki stanowi napięcie pracy w komorze jonizacyjnej i co się w nim dzieje?",
+          correct: "W komorze jonizacyjnej to obszar nasycenia, gdzie zbierane są niemal wszystkie powstałe pary jonów bez rekombinacji i bez namnażania lawinowego.",
+          distractors: [
+            "To obszar wyładowania lawinowego, gdzie każdy jon wywołuje lawinę w liczniku Geigera-Müllera.",
+            "To obszar rekombinacji, w którym większość par jonów łączy się ponownie przed dotarciem do elektrod.",
+            "To obszar zerowego napięcia, w którym ładunek nie jest w ogóle zbierany."
+          ],
+          explanation: "Komora jonizacyjna pracuje w obszarze nasycenia — zbierane są tam niemal wszystkie pary jonów bez rekombinacji i bez namnażania lawinowego."
+        },
+        {
+          id: 101,
+          section: "Część V",
+          q: "Czym jest wyładowanie lawinowe i jak przebiega?",
+          correct: "To gwałtowne namnażanie się nośników ładunku (głównie elektronów) w gazie pod wpływem silnego pola elektrycznego: elektrony przyspieszone przez wysokie napięcie zderzają się z atomami gazu, wybijając kolejne elektrony, które wywołują następne zderzenia (lawinę elektronową).",
+          distractors: [
+            "To powolne łączenie się kationów z anionami prowadzące do zaniku prądu w gazie.",
+            "To emisja światła widzialnego przez kryształ NaI(Tl) bez udziału gazu.",
+            "To rozpad jądra helu-4 na dwa protony i dwa neutrony."
+          ],
+          explanation: "Wyładowanie lawinowe polega na lawinowym namnażaniu elektronów w gazie w silnym polu elektrycznym poprzez kolejne zderzenia i wybijanie następnych elektronów."
+        },
+        {
+          id: 102,
+          section: "Część V",
+          q: "W jakich detektorach wykorzystuje się wyładowanie lawinowe?",
+          correct: "Wykorzystuje się je m.in. w licznikach proporcjonalnych i licznikach Geigera-Müllera.",
+          distractors: [
+            "Wykorzystuje się je wyłącznie w zwykłych komorach jonizacyjnych pracujących w obszarze nasycenia.",
+            "Wykorzystuje się je wyłącznie w fotodiodach półprzewodnikowych bez gazu.",
+            "Wykorzystuje się je wyłącznie w fantomach wodnych."
+          ],
+          explanation: "Zjawisko namnażania/wyładowania lawinowego wykorzystuje się m.in. w licznikach proporcjonalnych oraz licznikach Geigera-Müllera."
+        },
+        {
+          id: 103,
+          section: "Część V",
+          q: "Czym jest scyntylacja?",
+          correct: "To zjawisko emisji krótkiego błysku światła widzialnego lub nadfioletowego przez niektóre substancje (scyntylatory) po pochłonięciu energii promieniowania jonizującego.",
+          distractors: [
+            "To zjawisko całkowitego odbicia promieniowania rentgenowskiego od powierzchni wody.",
+            "To zjawisko powstawania dziur elektronowych wyłącznie w złączu p-n bez udziału światła.",
+            "To zjawisko wzrostu masy źródła izotopowego w miarę upływu czasu."
+          ],
+          explanation: "Scyntylacja to krótki błysk światła widzialnego lub UV emitowany przez scyntylator po pochłonięciu energii promieniowania jonizującego."
+        },
+        {
+          id: 104,
+          section: "Część V",
+          q: "Czym jest kryształ scyntylacyjny, jakie podaje się przykłady i jak działa?",
+          correct: "To ciało stałe (np. kryształ nieorganiczny, taki jak NaI(Tl), CsI, BGO lub scyntylator organiczny), w którym promieniowanie jonizujące wzbudza elektrony, a przy ich powrocie do stanów niższych emitowane są fotony światła widzialnego/UV.",
+          distractors: [
+            "To gaz szlachetny pod wysokim ciśnieniem, który pochłania światło widzialne i emituje cząstki alfa.",
+            "To elektroda dodatnia zbierająca elektrony w fotopowielaczu.",
+            "To ciało stałe, w którym promieniowanie jonizujące nigdy nie wzbudza elektronów."
+          ],
+          explanation: "W krysztale scyntylacyjnym (np. NaI(Tl), CsI, BGO lub scyntylatorze organicznym) wzbudzone elektrony przy powrocie do niższych stanów emitują fotony światła widzialnego lub UV."
+        },
+        {
+          id: 105,
+          section: "Część V",
+          q: "Czym jest katoda (fotokatoda) i jaką pełni rolę w fotopowielaczu?",
+          correct: "To elektroda ujemna w lampie/fotopowielaczu; w fotopowielaczu fotokatoda emituje elektrony pod wpływem padającego na nią światła scyntylacyjnego (zjawisko fotoelektryczne zewnętrzne).",
+          distractors: [
+            "To elektroda dodatnia zbierająca końcowy strumień elektronów na wyjściu układu.",
+            "To elektroda pośrednia utrzymywana na coraz wyższym dodatnim potencjale.",
+            "To warstwa ołowiu osłaniająca fotopowielacz przed światłem widzialnym."
+          ],
+          explanation: "Katoda (fotokatoda) to elektroda ujemna, która pod wpływem światła scyntylacyjnego uwalnia elektrony w zjawisku fotoelektrycznym zewnętrznym."
+        },
+        {
+          id: 106,
+          section: "Część V",
+          q: "Czym jest dynoda i jak działa w fotopowielaczu?",
+          correct: "To elektroda pośrednia w fotopowielaczu, utrzymywana na coraz wyższym potencjale dodatnim względem katody; elektrony uderzające w dynodę wybijają z niej kilka elektronów wtórnych, co zapewnia wielostopniowe wzmocnienie sygnału.",
+          distractors: [
+            "To elektroda ujemna emitująca światło UV pod wpływem uderzenia jonów dodatnich.",
+            "To izolator oddzielający fantom wodny od komory jonizacyjnej.",
+            "To element kolimatora wielolistkowego sterowany komputerowo."
+          ],
+          explanation: "Kolejne dynody mają coraz wyższy dodatni potencjał względem katody; uderzające w nie elektrony wybijają elektrony wtórne, wzmacniając sygnał wielostopniowo."
+        },
+        {
+          id: 107,
+          section: "Część V",
+          q: "Czym jest anoda i jaką pełni funkcję?",
+          correct: "To elektroda dodatnia zbierająca końcowy strumień elektronów (lub ładunek w detektorze), generując mierzalny impuls prądowy lub napięciowy.",
+          distractors: [
+            "To elektroda ujemna naświetlana światłem scyntylacyjnym w celu emisji elektronów.",
+            "To kryształ scyntylacyjny zamieniający promieniowanie gamma na fotony UV.",
+            "To punkt przecięcia osi obrotu głowicy i osi centralnej wiązki."
+          ],
+          explanation: "Anoda to elektroda dodatnia, która zbiera końcowy strumień elektronów lub ładunek, wytwarzając mierzalny impuls prądowy lub napięciowy."
+        },
+        {
+          id: 108,
+          section: "Część V",
+          q: "Jak powstają elektrony swobodne i dziury elektronowe w półprzewodniku pod wpływem promieniowania jonizującego?",
+          correct: "Promieniowanie jonizujące może przenieść elektrony z pasma walencyjnego do pasma przewodnictwa — powstają wtedy elektrony swobodne (ujemne nośniki ładunku) oraz dziury elektronowe (brakujące elektrony w paśmie walencyjnym, zachowujące się jak dodatnie nośniki ładunku).",
+          distractors: [
+            "Elektrony przechodzą z pasma przewodnictwa do pasma walencyjnego, tworząc wyłącznie ujemne dziury.",
+            "Promieniowanie rozbija atomy półprzewodnika na cząstki alfa i pozytony bez zmiany obsadzenia pasm.",
+            "W półprzewodniku powstają wyłącznie dziury elektronowe bez elektronów swobodnych."
+          ],
+          explanation: "Przeniesienie elektronu z pasma walencyjnego do pasma przewodnictwa tworzy wolny elektron (nośnik ujemny) i dziurę elektronową w paśmie walencyjnym (zachowującą się jak nośnik dodatni)."
+        },
+        {
+          id: 109,
+          section: "Część V",
+          q: "Jak zachowują się elektrony i dziury w przyłożonym polu elektrycznym w półprzewodniku?",
+          correct: "W przyłożonym polu elektrycznym oba rodzaje nośników poruszają się w przeciwnych kierunkach, tworząc prąd.",
+          distractors: [
+            "Oba rodzaje nośników pozostają nieruchome i nie tworzą żadnego prądu.",
+            "Oba rodzaje nośników poruszają się wyłącznie w tym samym kierunku z identyczną prędkością bez przepływu prądu.",
+            "Dziury elektronowe poruszają się w polu elektrycznym, a elektrony swobodne nie reagują na pole."
+          ],
+          explanation: "Pod wpływem przyłożonego pola elektrycznego elektrony swobodne i dziury poruszają się w przeciwnych kierunkach, dając prąd elektryczny."
+        },
+        {
+          id: 110,
+          section: "Część V",
+          q: "Czym jest fotodioda i jak działa?",
+          correct: "To złącze półprzewodnikowe (p-n lub p-i-n) zaprojektowane do zamiany padającego światła (fotonów optycznych) na sygnał elektryczny; fotony pochłonięte w obszarze złącza generują pary elektron–dziura, które rozdzielane w polu elektrycznym dają fotoprąd proporcjonalny do natężenia światła.",
+          distractors: [
+            "To detektor gazowy wypełniony powietrzem, w którym powstają pary jonów pod wpływem cząstek alfa.",
+            "To układ luster umieszczony w głowicy aparatu do pomiaru odległości od skóry.",
+            "To złącze półprzewodnikowe emitujące promieniowanie gamma pod wpływem podgrzewania."
+          ],
+          explanation: "Fotodioda to złącze półprzewodnikowe (p-n lub p-i-n), w którym fotony optyczne generują pary elektron–dziura, a rozdzielone w polu dają fotoprąd proporcjonalny do natężenia światła."
+        },
+        {
+          id: 111,
+          section: "Część V",
+          q: "Do czego bywają stosowane fotodiody w medycynie?",
+          correct: "W medycynie fotodiody bywają stosowane m.in. do odczytu światła ze scyntylatorów.",
+          distractors: [
+            "W medycynie fotodiody stosuje się wyłącznie jako osłony indywidualne pacjenta.",
+            "W medycynie fotodiody zastępują tomograf komputerowy w ocenie przerzutów.",
+            "W medycynie fotodiody stosuje się wyłącznie do produkcji izotopu Co-60."
+          ],
+          explanation: "Jednym z zastosowań medycznych fotodiod jest odczyt światła emitowanego przez scyntylatory."
+        },
+        {
+          id: 112,
+          section: "Część V",
+          q: "Czym jest cząstka alfa (α), jaki ma skład, ładunek i masę?",
+          correct: "To jądro atomu helu-4 (⁴He²⁺), złożone z dwóch protonów i dwóch neutronów; ma ładunek dodatni (+2e) i stosunkowo dużą masę.",
+          distractors: [
+            "To elektron o ładunku ujemnym (-1e) i bardzo małej masie.",
+            "To kwant promieniowania elektromagnetycznego bez masy spoczynkowej i bez ładunku.",
+            "To jądro wodoru-1 złożone z jednego protonu i ładunku +1e."
+          ],
+          explanation: "Cząstka alfa (⁴He²⁺) to jądro helu-4 zbudowane z 2 protonów i 2 neutronów, o ładunku +2e i stosunkowo dużej masie."
+        },
+        {
+          id: 113,
+          section: "Część V",
+          q: "Jakie właściwości oddziaływania, jonizacji, zasięgu i zagrożenia ma cząstka alfa?",
+          correct: "Charakteryzuje się silnym oddziaływaniem z materią, dużą gęstością jonizacji (wysoki LET) i bardzo małym zasięgiem (w tkance lub powietrzu zatrzymuje się na krótkim dystansie; w ciele jest groźna głównie przy skażeniu wewnętrznym).",
+          distractors: [
+            "Charakteryzuje się słabym oddziaływaniem, niskim LET i zasięgiem kilkudziesięciu metrów w ołowiu.",
+            "Przenika swobodnie przez cały organizm człowieka i jest groźna wyłącznie z zewnątrz przez ubranie.",
+            "Nie wywołuje jonizacji ośrodka, w którym się porusza."
+          ],
+          explanation: "Cząstka alfa silnie oddziałuje z materią, ma wysoki LET (dużą gęstość jonizacji) i krótki zasięg; wewnątrz organizmu stanowi zagrożenie zwłaszcza przy skażeniu wewnętrznym."
+        },
+        {
+          id: 114,
+          section: "Część V",
+          q: "Czym jest cząstka beta (β) i jakie ma odmiany (β⁻ oraz β⁺)?",
+          correct: "To elektron (β⁻, ładunek -1e) lub pozyton (β⁺, ładunek +1e) emitowany podczas rozpadu promieniotwórczego jądra atomowego.",
+          distractors: [
+            "To jądro helu-4 (β⁻ o ładunku +2e) lub neutron (β⁺ o ładunku 0).",
+            "To foton o energii E = h·ν (β⁻ i β⁺ bez ładunku elektrycznego).",
+            "To atom wodoru (β⁻ o ładunku +1e) lub jon tlenu (β⁺ o ładunku -2e)."
+          ],
+          explanation: "Cząstka beta emitowana w rozpadzie jądrowym to elektron (β⁻, ładunek -1e) albo pozyton (β⁺, ładunek +1e)."
+        },
+        {
+          id: 115,
+          section: "Część V",
+          q: "Jak wypada cząstka beta pod względem masy, przenikliwości i zasięgu oraz gdzie się ją wykorzystuje?",
+          correct: "Jest znacznie lżejsza i bardziej przenikliwa niż cząstka alfa, a jej zasięg rośnie wraz z energią; jest wykorzystywana m.in. w radioterapii, brachyterapii i diagnostyce obrazowej (np. pozytony w PET).",
+          distractors: [
+            "Jest znacznie cięższa i mniej przenikliwa niż cząstka alfa, a jej zasięg maleje wraz ze wzrostem energii.",
+            "Ma zerową masę spoczynkową i nie jest wykorzystywana w medycynie.",
+            "Zatrzymuje się zawsze na pierwszej warstwie naskórka niezależnie od energii."
+          ],
+          explanation: "Cząstka beta jest znacznie lżejsza i bardziej przenikliwa od cząstki alfa, jej zasięg rośnie z energią, a w medycynie stosuje się ją m.in. w radioterapii, brachyterapii i PET (pozytony)."
+        },
+        {
+          id: 116,
+          section: "Część V",
+          q: "Czym jest foton, jaką ma energię i jakie przyjmuje nazwy?",
+          correct: "To kwant promieniowania elektromagnetycznego (bez masy spoczynkowej i bez ładunku elektrycznego), niosący energię E = h · ν; w zależności od energii i pochodzenia określa się go m.in. jako foton światła, promieniowania rentgenowskiego (X) lub promieniowania gamma (γ).",
+          distractors: [
+            "To cząstka o masie równej masie protonu i ładunku +2e, o energii E = m/c².",
+            "To elektron uwalniany z katody fotopowielacza o stałym ładunku -1e.",
+            "To jądro atomu helu o ładunku +2e, określane wyłącznie jako promieniowanie alfa."
+          ],
+          explanation: "Foton to kwant promieniowania elektromagnetycznego bez masy spoczynkowej i ładunku, o energii E = h·ν; w zależności od energii i źródła mówi się m.in. o fotonie światła, X lub γ."
+        },
+        {
+          id: 117,
+          section: "Część V",
+          q: "Jakie główne mechanizmy oddziaływania fotonu z materią wymienia się w notatce?",
+          correct: "W materii foton oddziałuje m.in. poprzez efekt fotoelektryczny, rozpraszanie comptonowskie i produkcję par.",
+          distractors: [
+            "W materii foton oddziałuje wyłącznie poprzez rozpad beta-minus i wyładowanie lawinowe.",
+            "W materii foton oddziałuje wyłącznie poprzez tarcie mechaniczne na powierzchni skóry.",
+            "Foton w ogóle nie oddziałuje z materią."
+          ],
+          explanation: "Wśród głównych oddziaływań fotonu z materią wymieniono efekt fotoelektryczny, rozpraszanie comptonowskie oraz produkcję par."
+        },
+        {
+          id: 118,
+          section: "Część V",
+          q: "Czy wszystkie rodzaje promieniowania jonizującego to promieniowanie cząsteczkowe?",
+          correct: "Nie — promieniowanie jonizujące dzieli się na dwie główne grupy: promieniowanie cząsteczkowe (korpuskularne) oraz promieniowanie elektromagnetyczne (fotonowe).",
+          distractors: [
+            "Tak, każde promieniowanie jonizujące jest promieniowaniem cząsteczkowym.",
+            "Nie, promieniowanie jonizujące dzieli się wyłącznie na promieniowanie alfa i świetlne.",
+            "Tak, promieniowanie X i gamma należą do cząstek korpuskularnych."
+          ],
+          explanation: "Promieniowanie jonizujące dzieli się na dwie główne grupy: promieniowanie cząsteczkowe (korpuskularne) oraz promieniowanie elektromagnetyczne (fotonowe)."
+        },
+        {
+          id: 119,
+          section: "Część V",
+          q: "Czym jest promieniowanie cząsteczkowe (korpuskularne) i jakie przykłady obejmuje?",
+          correct: "Składa się z cząstek obdarzonych masą spoczynkową (i często ładunkiem elektrycznym); obejmuje cząstki alfa (α), cząstki beta (β⁻ i β⁺, czyli elektrony i pozytony), protony, neutrony oraz ciężkie jony.",
+          distractors: [
+            "Składa się wyłącznie z fal elektromagnetycznych bez masy spoczynkowej, np. promieniowania X i gamma.",
+            "Obejmuje wyłącznie światło widzialne emitowane przez scyntylator.",
+            "Składa się wyłącznie z fotonów o energii E = h·ν."
+          ],
+          explanation: "Promieniowanie cząsteczkowe (korpuskularne) tworzą cząstki posiadające masę spoczynkową (często też ładunek), m.in. α, β⁻, β⁺, protony, neutrony i ciężkie jony."
+        },
+        {
+          id: 120,
+          section: "Część V",
+          q: "Czym jest promieniowanie elektromagnetyczne (fotonowe), jakie przykłady obejmuje i czy zalicza się je do cząsteczkowego?",
+          correct: "To fala elektromagnetyczna, której nośnikiem są fotony (kwanty energii bez masy spoczynkowej i bez ładunku elektrycznego), np. promieniowanie rentgenowskie (X) oraz promieniowanie gamma (γ); w klasyfikacji radiologicznej fotonów nie zalicza się do promieniowania cząsteczkowego.",
+          distractors: [
+            "To strumień elektronów i protonów o dużej masie spoczynkowej, zaliczany do cząsteczkowego.",
+            "To cząstki o ładunku +2e, takie jak cząstki alfa, zaliczane do korpuskularnego.",
+            "To fala mechaniczna w wodzie, zaliczana do promieniowania cząsteczkowego."
+          ],
+          explanation: "Promieniowanie fotonowe to fala elektromagnetyczna przenoszona przez fotony (bez masy spoczynkowej i ładunku), np. X i γ; w klasyfikacji radiologicznej nie zalicza się go do promieniowania cząsteczkowego."
+        }
+      ];
+
+      const LETTERS = ["A", "B", "C", "D"];
+
+      let activePool = [...QUESTIONS];
+      let currentIndex = 0;
+      // Map question.id -> { chosenText: string, shuffledOptions: string[], isCorrect: boolean }
+      let answersMap = new Map();
+
+      const elSectionSelect = document.getElementById("rtSectionSelect");
+      const elShuffleQuestionsBtn = document.getElementById("rtShuffleQuestionsBtn");
+      const elRestartBtn = document.getElementById("rtRestartBtn");
+      const elCard = document.getElementById("rtCard");
+      const elTotalBadge = document.getElementById("rtTotalBadge");
+      const elPosText = document.getElementById("rtPosText");
+      const elAnsweredText = document.getElementById("rtAnsweredText");
+      const elCorrectText = document.getElementById("rtCorrectText");
+      const elAccuracyText = document.getElementById("rtAccuracyText");
+      const elProgressBar = document.getElementById("rtProgressBar");
+
+      function shuffleArray(arr) {
+        const copy = arr.slice();
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      function getFilteredQuestions() {
+        const sec = elSectionSelect.value;
+        if (sec === "ALL") return QUESTIONS.slice();
+        return QUESTIONS.filter((item) => item.section === sec);
+      }
+
+      function startNewRound(shuffleQuestions) {
+        activePool = getFilteredQuestions();
+        if (shuffleQuestions) {
+          activePool = shuffleArray(activePool);
+        }
+        currentIndex = 0;
+        answersMap = new Map();
+        render();
+      }
+
+      function getOrCreateShuffledOptions(qObj) {
+        const existing = answersMap.get(qObj.id);
+        if (existing && existing.shuffledOptions) {
+          return existing.shuffledOptions;
+        }
+        const opts = shuffleArray([qObj.correct, ...qObj.distractors]);
+        answersMap.set(qObj.id, {
+          chosenText: null,
+          shuffledOptions: opts,
+          isCorrect: null
+        });
+        return opts;
+      }
+
+      function updateStats() {
+        const total = activePool.length;
+        let answered = 0;
+        let correct = 0;
+
+        for (const qObj of activePool) {
+          const rec = answersMap.get(qObj.id);
+          if (rec && rec.chosenText !== null) {
+            answered++;
+            if (rec.isCorrect) correct++;
+          }
+        }
+
+        const acc = answered > 0 ? Math.round((correct / answered) * 100) : 0;
+        const posDisplay = total === 0 ? "0 / 0" : `${Math.min(currentIndex + 1, total)} / ${total}`;
+
+        elTotalBadge.textContent = `${total} pytań`;
+        elPosText.textContent = posDisplay;
+        elAnsweredText.textContent = `${answered} / ${total}`;
+        elCorrectText.textContent = `${correct}`;
+        elAccuracyText.textContent = `${acc}%`;
+
+        const pct = total > 0 ? Math.round((answered / total) * 100) : 0;
+        elProgressBar.style.width = `${pct}%`;
+      }
+
+      function handleSelectOption(qObj, chosenText) {
+        const currentRec = answersMap.get(qObj.id) || {
+          shuffledOptions: shuffleArray([qObj.correct, ...qObj.distractors])
+        };
+        if (currentRec.chosenText !== null) return;
+
+        const isCorrect = chosenText === qObj.correct;
+        answersMap.set(qObj.id, {
+          ...currentRec,
+          chosenText,
+          isCorrect
+        });
+        render();
+      }
+
+      function renderSummary() {
+        let correct = 0;
+        for (const qObj of activePool) {
+          const rec = answersMap.get(qObj.id);
+          if (rec && rec.isCorrect) correct++;
+        }
+        const total = activePool.length;
+        const pct = total > 0 ? Math.round((correct / total) * 100) : 0;
+
+        elCard.innerHTML = `
+          <div class="rt-summary">
+            <h2>Podsumowanie rundy</h2>
+            <p>Ukończono wszystkie pytania z wybranego zakresu.</p>
+            <div class="rt-summary-score">${correct} / ${total} (${pct}%)</div>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+              <button class="rt-btn" type="button" id="rtBackToFirstBtn">Wróć do pytania 1</button>
+              <button class="rt-btn primary" type="button" id="rtSummaryRestartBtn">Zagraj ponownie (nowe losowanie)</button>
+            </div>
+          </div>
+        `;
+
+        document.getElementById("rtBackToFirstBtn").addEventListener("click", () => {
+          currentIndex = 0;
+          render();
+        });
+        document.getElementById("rtSummaryRestartBtn").addEventListener("click", () => {
+          startNewRound(true);
+        });
+      }
+
+      function render() {
+        updateStats();
+
+        if (currentIndex >= activePool.length) {
+          renderSummary();
+          return;
+        }
+
+        const qObj = activePool[currentIndex];
+        const options = getOrCreateShuffledOptions(qObj);
+        const rec = answersMap.get(qObj.id);
+        const answered = rec && rec.chosenText !== null;
+
+        elCard.innerHTML = "";
+
+        const meta = document.createElement("div");
+        meta.className = "rt-meta";
+        meta.innerHTML = `
+          <span><strong>${qObj.section}</strong> • Pytanie #${qObj.id}</span>
+          <span>Pozycja ${currentIndex + 1} z ${activePool.length}</span>
+        `;
+        elCard.appendChild(meta);
+
+        const qEl = document.createElement("p");
+        qEl.className = "rt-question";
+        qEl.textContent = qObj.q;
+        elCard.appendChild(qEl);
+
+        const optsWrap = document.createElement("div");
+        optsWrap.className = "rt-options";
+
+        options.forEach((optText, idx) => {
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.className = "rt-option";
+
+          if (answered) {
+            btn.disabled = true;
+            if (optText === qObj.correct) {
+              btn.classList.add("correct");
+            } else if (optText === rec.chosenText && !rec.isCorrect) {
+              btn.classList.add("wrong");
+            } else {
+              btn.classList.add("dimmed");
+            }
+          } else {
+            btn.addEventListener("click", () => handleSelectOption(qObj, optText));
+          }
+
+          const keySpan = document.createElement("span");
+          keySpan.className = "rt-opt-key";
+          keySpan.textContent = LETTERS[idx] || String(idx + 1);
+
+          const textSpan = document.createElement("span");
+          textSpan.textContent = optText;
+
+          btn.appendChild(keySpan);
+          btn.appendChild(textSpan);
+          optsWrap.appendChild(btn);
+        });
+
+        elCard.appendChild(optsWrap);
+
+        const fbEl = document.createElement("div");
+        fbEl.className = "rt-feedback";
+        if (answered) {
+          fbEl.classList.add("show", rec.isCorrect ? "ok" : "bad");
+          fbEl.innerHTML = `
+            <div class="rt-feedback-title">${
+              rec.isCorrect ? "Prawidłowa odpowiedź!" : "Nieprawidłowa odpowiedź."
+            }</div>
+            <p class="rt-explanation">${qObj.explanation}</p>
+          `;
+        }
+        elCard.appendChild(fbEl);
+
+        const navEl = document.createElement("div");
+        navEl.className = "rt-footer-nav";
+
+        const prevBtn = document.createElement("button");
+        prevBtn.type = "button";
+        prevBtn.className = "rt-btn";
+        prevBtn.textContent = "Poprzednie";
+        prevBtn.disabled = currentIndex === 0;
+        prevBtn.addEventListener("click", () => {
+          if (currentIndex > 0) {
+            currentIndex--;
+            render();
+          }
+        });
+
+        const nextBtn = document.createElement("button");
+        nextBtn.type = "button";
+        nextBtn.className = "rt-btn primary";
+        nextBtn.textContent = currentIndex === activePool.length - 1 ? "Podsumowanie" : "Następne";
+        nextBtn.addEventListener("click", () => {
+          currentIndex++;
+          render();
+        });
+
+        navEl.appendChild(prevBtn);
+        navEl.appendChild(nextBtn);
+        elCard.appendChild(navEl);
+      }
+
+      elSectionSelect.addEventListener("change", () => startNewRound(false));
+      elShuffleQuestionsBtn.addEventListener("click", () => startNewRound(true));
+      elRestartBtn.addEventListener("click", () => startNewRound(false));
+
+      startNewRound(false);
+    })();
+  </script>
+</body>
+</html>
